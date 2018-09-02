@@ -13,12 +13,13 @@ urlpatterns = [
     url(r'^properties', views.properties_html),
     url(r'^agents', views.agents_html),
     url(r'^login', auth_views.login),
+    url(r'^monitor', views.monitor_html),
     #url(r'^authenticate', auth.login, {'template_name' : ''}),
     # url(r'^logout', auth.logout),
     url(r'^logout', auth_views.logout, {'next_page': '/'}, name='logout'),
 
     # The home page
-    url(r'^$', views.ipcamera_html, name='index'),
+    url(r'^$', views.index, name='index'),
 
     url(r'video_feed', camera.video_feed, name='video_feed'),
     url(r'^start-video', camera.start_video),

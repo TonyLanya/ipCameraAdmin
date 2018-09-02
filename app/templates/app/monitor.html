@@ -35,6 +35,7 @@ AUTHORIZING
 {% endblock video %}
 
 {% block content %}
+
 <input type="hidden" id="hls" style="margin-left: 500px;" value="{{ url }}">
 <div class="right_col" role="main">
   <div class="">
@@ -43,90 +44,15 @@ AUTHORIZING
         <h3>IpCamera <small>Add or Edit Cameras</small></h3>
       </div>
     </div>
-    <div id="createNew" class="modal" role="dialog">
-      <div class="modal-dialog modal-primary">
-
-          <!-- Modal content-->
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h4 class="modal-title">Create New Camera</h4>
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-              </div>
-              <div class="modal-body">
-                  <div class="form-group row">
-                      <label for="editName" class="col-sm-3 text-right control-label col-form-label">Name : </label>
-                      <div class="col-sm-9">
-                          <input id="createName" type="text" class="form-control" placeholder="Camera Name">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editAddress" class="col-sm-3 text-right control-label col-form-label">Address : </label>
-                      <div class="col-sm-9">
-                          <input id="createAddress" type="email" class="form-control" placeholder="Camera Address">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editPort" class="col-sm-3 text-right control-label col-form-label">Port : </label>
-                      <div class="col-sm-9">
-                          <input id="createPort" type="text" class="form-control" placeholder="Camera Port Number">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editVStream" class="col-sm-3 text-right control-label col-form-label">VideoStream : </label>
-                      <div class="col-sm-9">
-                          <input id="createVStream" type="text" class="form-control" placeholder="Video Stream Name">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editDStream" class="col-sm-3 text-right control-label col-form-label">DataStream : </label>
-                      <div class="col-sm-9">
-                          <input id="createDStream" type="text" class="form-control" placeholder="Data Stream Name">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editLogin" class="col-sm-3 text-right control-label col-form-label">Account : </label>
-                      <div class="col-sm-9">
-                          <input id="createLogin" type="text" class="form-control" placeholder="Camera Account">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editPassword" class="col-sm-3 text-right control-label col-form-label">Password : </label>
-                      <div class="col-sm-9">
-                          <input id="createPassword" type="password" class="form-control" placeholder="Camera password">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editSerialNumber" class="col-sm-3 text-right control-label col-form-label">Serial_number : </label>
-                      <div class="col-sm-9">
-                          <input id="createSerialNumber" type="text" class="form-control" placeholder="Camera Serial Number">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editPropertyId" class="col-sm-3 text-right control-label col-form-label">Property_id : </label>
-                      <div class="col-sm-9">
-                          <input id="createPropertyId" type="text" class="form-control" placeholder="Property Id">
-                      </div>
-                  </div>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" onclick="onCreate()" class="btn btn-success">Create</button>
-              </div>
-          </div>
-
-      </div>
-  </div>
     <div class="clearfix"></div>
 
     <div class="row">
-      <button data-toggle="modal" data-target="#createNew"> Create New</button>
         <table cellpadding="0" cellspacing="0" border="0" id="example">
             <thead>
                 <tr>
                   <th>Name</th>
                   <th>Address</th>
                   <th>Port</th>
-                  <th>Stream Name</th>
-                  <th>Data Stream Name</th>
                   <th>Serial_number</th>
                   <th>Property_id</th>
                   <th>CreateTime</th>
@@ -189,8 +115,6 @@ AUTHORIZING
                     { "data" : "fields.name" },
                     { "data" : "fields.address" },
                     { "data" : "fields.port" },
-                    { "data" : "fields.video_stream"},
-                    { "data" : "fields.data_stream"},
                     { "data" : "fields.serial_number" },
                     { "data" : "fields.property_id" },
                     { "data" : "fields.created_at" },
@@ -258,55 +182,60 @@ AUTHORIZING
             }
         });
     }
-    
 
-    // function getOnlineStatus() {
-    //     $.get("getOnlineState", function())
-    // }
-    // getOnlineStatus();
-    
-    function onCreate() {
-      prename = $("#createName").val();
-      preaddress = $("#createAddress").val();
-      preport = $("#createPort").val();
-      prevstream = $("#createVStream").val();
-      predstream = $("#createDStream").val();
-      prelogin = $('#createLogin').val();
-      prepassword = $('#createPassword').val();
-      preserialnumber = $("#createSerialNumber").val();
-      prepropertyid = $("#createPropertyId").val();
-      if (prename == '') {
-        alert("Please insert Camera Name");
-        return;
-      }
-      $.ajax({
-        /* the route pointing to the post function */
-        url: '/camera/create-new',
-        type: 'POST',
-        /* send the csrf-token and the input to the controller */
-        data: {
-            name: prename,
-            address: preaddress,
-            port: preport,
-            vstream: prevstream,
-            dstream: predstream,
-            login: prelogin,
-            password: prepassword,
-            serialnumber: preserialnumber,
-            propertyid: prepropertyid
-        },
-        dataType: 'JSON',
-        /* remind that 'data' is the response of the AjaxController */
-        success: function (data) {
-          console.log(data);
-          if ( data.status == "failed" ) {
-              alert(data.msg);
-          } else {
-              alert(data.status);
-              location.reload();
-          }
-        }
-      });
+    var interval = 1000;  // 1000 = 1 second, 3000 = 3 seconds
+    var view_status = 0;
+    function doAjax() {
+        $.ajax({
+            type: 'GET',
+            url: "get-notify",
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function (data) {
+                // $("#noti-counts").text(data.length);
+                // if ( data.length > 0 ) {
+                //     $("#notifications").removeClass("hide-noti");
+                //     $("#notifications").addClass("show-noti");
+                // } else {
+                //     $("#notifications").removeClass("show-noti");
+                //     $("#notifications").addClass("hide-noti");
+                // }
+                console.log(data);
+                if (view_status == 0) {
+                    rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+                    url = "https://" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"];
+                    high = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
+                    serial = data[0]["fields"]["serial_number"];
+                    //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
+                    //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
+                    $.ajax({
+                        type: 'POST',
+                        url: "start-video",
+                        data: {
+                            streamUrl: rtsp,
+                            camurl : url,
+                            serial : serial,
+                            high : high
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
+                            view_status = 1;
+                            flag_auth = 1;
+                            authorize();
+                        }
+                    });
+                    $("#videoContainer").show();
+                } else {
+                    console.log("new noti received");
+                }
+            },
+            complete: function (data) {
+                // Schedule the next
+                setTimeout(doAjax, interval);
+            }
+        });
     }
+    setTimeout(doAjax, interval);
   </script>
 {% endblock javascripts %}
