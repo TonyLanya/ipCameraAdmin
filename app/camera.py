@@ -150,6 +150,7 @@ def cam_authorize(request):
 flag_auth = 0
 
 def threaded_authorize(rtsp_url, serial):
+    print serial
     cam = Cameras.objects.filter(serial_number=serial)
     if cam[0].auth_state == "AUTHORIZED":
         return
@@ -233,9 +234,14 @@ def start_video(request):
     high_url = request.POST.get('high')
     cam_url = request.POST.get('camurl')
     serial = request.POST.get('serial')
+    Cameras.objects.filter(serial_number=serial).update(auth_state="AUTHORIZING")
 
     #thread = Thread(target = threaded_main, args = (high_url, serial,))
     flag_auth = 1
+<<<<<<< HEAD
+=======
+    threaded_authorize(high_url, serial)
+>>>>>>> develop
     #thread.start()
     return HttpResponse(json.dumps({'status' : 'success'}), content_type="application/json")
 

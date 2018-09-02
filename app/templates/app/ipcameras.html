@@ -168,6 +168,7 @@ AUTHORIZING
         $("#mainVideo").empty();
         $("#videoContainer").hide();
         flag_auth = 0;
+        view_status = 0;
     }
 
     function draw(v, c, w, h) {
@@ -209,7 +210,6 @@ AUTHORIZING
     } );
     $('#example tbody').on('click', 'tr', function() {
         var data = $("#example").DataTable().row(this).data();
-        console.log(data);
         rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
         url = "https://" + data["fields"]["address"] + ":" + data["fields"]["port"];
         high = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";

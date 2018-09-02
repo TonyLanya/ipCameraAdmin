@@ -7,31 +7,6 @@
  * });
  */
 
-var interval = 100000;  // 1000 = 1 second, 3000 = 3 seconds
-function doAjax() {
-    $.ajax({
-            type: 'GET',
-            url: "get-notify",
-            data: $(this).serialize(),
-            dataType: 'json',
-            success: function (data) {
-                $("#noti-counts").text(data.length);
-                if ( data.length > 0 ) {
-                    $("#notifications").removeClass("hide-noti");
-                    $("#notifications").addClass("show-noti");
-                } else {
-                    $("#notifications").removeClass("show-noti");
-                    $("#notifications").addClass("hide-noti");
-                }
-            },
-            complete: function (data) {
-                    // Schedule the next
-                    setTimeout(doAjax, interval);
-            }
-    });
-}
-setTimeout(doAjax, interval);
-
 var noti = document.getElementById("show-noti");
 var close = document.getElementsByClassName("close")[0];
 

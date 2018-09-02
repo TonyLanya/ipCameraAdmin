@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.template import loader
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from .models import Cameras, Emails, Users, Properties, Agents
 from django.views.decorators.csrf import csrf_exempt
@@ -10,9 +10,13 @@ import re
 from app.forms import EmailForm
 
 def index(request):
-    context = {}
-    template = loader.get_template('app/index.html')
-    return HttpResponse(template.render(context, request))
+    # context = {}
+    # template = loader.get_template('app/index.html')
+    # return HttpResponse(template.render(context, request))
+    if request.user.is_superuser:
+        return HttpResponseRedirect("/ipcameras")
+    else:
+        return HttpResponseRedirect("/monitor")
 
 
 def gentella_html(request):
@@ -29,6 +33,12 @@ def gentella_html(request):
 def ipcamera_html(request):
     context = {}
     template = loader.get_template('app/ipcameras.html')
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/login')
+def monitor_html(request):
+    context = {}
+    template = loader.get_template('app/monitor.html')
     return HttpResponse(template.render(context, request))
 
 def login_html(request):
@@ -98,8 +108,17 @@ def email_receiver(request):
 
 def get_notify(request):
     object_list = Emails.objects.filter(notify=False)
-    json = serializers.serialize('json', object_list)
-    return HttpResponse(json, content_type='application/json')
+    if (len(object_list) > 0):
+        email = object_list[0]
+        emails = Emails.objects.filter(message_id=email.message_id)
+        emails.update(notify=True)
+        serial = email.serial
+        cam = Cameras.objects.filter(serial_number=serial)
+        json = serializers.serialize('json', cam)
+        print json
+        return HttpResponse(json, content_type='application/json')
+    else:
+        return HttpResponse('')
 
 def remove_notis(request):
     Emails.objects.filter(notify=False).update(notify=True)

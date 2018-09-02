@@ -1,0 +1,241 @@
+{% extends "app/base_site.html" %}
+
+{% block title %} Tables {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block video %}
+<div class="video-container" id="videoContainer">
+<!-- <video id="shaka" class="player" autoplay></video> -->
+<!-- <canvas id="ipCamera" class="canvas"></canvas> -->
+<div id="auth_res" style="    position: absolute;
+left: calc(50% - 350px);
+top: calc(50% - 395px);
+z-index: 1000;
+width: 704px;
+height: 155px;
+background-color: green;
+color: white;
+text-align: center;
+font-size: 70px;
+line-height: 155px;
+font-weight: bold;">
+AUTHORIZING
+</div>
+<div id="mainVideo">
+    
+</div>
+<button onclick="stop_cam();" style="width: 200px;position: absolute;left: calc(50% - 100px);top: calc(50% + 240px);">
+    End Camera
+</button>
+</div>
+{% endblock video %}
+
+{% block content %}
+
+<input type="hidden" id="hls" style="margin-left: 500px;" value="{{ url }}">
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>IpCamera <small>Add or Edit Cameras</small></h3>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <table cellpadding="0" cellspacing="0" border="0" id="example">
+            <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th>Port</th>
+                  <th>Serial_number</th>
+                  <th>Property_id</th>
+                  <th>CreateTime</th>
+                  <!-- <th>OnlineStatus</th> -->
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/2.4.1/shaka-player.compiled.js"></script>
+  <script type="text/javascript" language="javascript" class="init">
+    $(document).ready(function() {
+    });
+
+    var serial;
+
+    function stop_cam() {
+        $.ajax({
+            type: 'POST',
+            url: "stop-record",
+            data: {
+                serial : serial
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                location.reload();
+            }
+        });
+        $("#mainVideo").empty();
+        $("#videoContainer").hide();
+        flag_auth = 0;
+        view_status = 0;
+    }
+
+    function draw(v, c, w, h) {
+      if(v.paused || v.ended) return false;
+      c.drawImage(v,0,0,w,h);
+      setTimeout(draw,20,v,c,w,h);
+    }
+
+    $(document).ready(function() {
+        $('#example').dataTable( {
+            "processing": true,
+            "ajax": {
+                "processing": true,
+                "url": "{% url 'my_ajax_url' %}",
+                "dataSrc": ""
+            },
+
+            "columns": [
+                    { "data" : "fields.name" },
+                    { "data" : "fields.address" },
+                    { "data" : "fields.port" },
+                    { "data" : "fields.serial_number" },
+                    { "data" : "fields.property_id" },
+                    { "data" : "fields.created_at" },
+                    // { mRender: function (data, type, row) {
+                    //     if (row["online_status"] == false) {
+                    //         return 'OFFLINE';
+                    //     } else {
+                    //         return 'ONLINE';
+                    //     }
+                    // }}
+                ]
+        } );
+    } );
+    $('#example tbody').on('click', 'tr', function() {
+        var data = $("#example").DataTable().row(this).data();
+        rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+        url = "https://" + data["fields"]["address"] + ":" + data["fields"]["port"];
+        high = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
+        serial = data["fields"]["serial_number"];
+        //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
+        //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
+        $.ajax({
+            type: 'POST',
+            url: "start-video",
+            data: {
+                streamUrl: rtsp,
+                camurl : url,
+                serial : serial,
+                high : high
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
+                flag_auth = 1;
+                authorize();
+            }
+        });
+        $("#videoContainer").show();
+    });
+
+    var flag_auth = 0;
+    function authorize() {
+        console.log("authorize");
+        $.ajax({
+            type: 'GET',
+            url: "cam-authorize",
+            data: {
+                serial : serial
+            },
+            dataType: 'json',
+            success: function (data) {
+                if ( flag_auth == 1) {
+                    $("#auth_res").text(data["status"]);
+                }
+                if (data["status"] == "AUTHORIZED") {
+                    flag_auth = 0;
+                }
+                console.log(data);
+            },
+            complete: function() {
+                if( flag_auth == 1 ) {
+                    //setTimeout(authorize, 2000);
+                    authorize();
+                }
+            }
+        });
+    }
+
+    var interval = 1000;  // 1000 = 1 second, 3000 = 3 seconds
+    var view_status = 0;
+    function doAjax() {
+        $.ajax({
+            type: 'GET',
+            url: "get-notify",
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function (data) {
+                // $("#noti-counts").text(data.length);
+                // if ( data.length > 0 ) {
+                //     $("#notifications").removeClass("hide-noti");
+                //     $("#notifications").addClass("show-noti");
+                // } else {
+                //     $("#notifications").removeClass("show-noti");
+                //     $("#notifications").addClass("hide-noti");
+                // }
+                console.log(data);
+                if (view_status == 0) {
+                    rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+                    url = "https://" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"];
+                    high = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
+                    serial = data[0]["fields"]["serial_number"];
+                    //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
+                    //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
+                    $.ajax({
+                        type: 'POST',
+                        url: "start-video",
+                        data: {
+                            streamUrl: rtsp,
+                            camurl : url,
+                            serial : serial,
+                            high : high
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
+                            view_status = 1;
+                            flag_auth = 1;
+                            authorize();
+                        }
+                    });
+                    $("#videoContainer").show();
+                } else {
+                    console.log("new noti received");
+                }
+            },
+            complete: function (data) {
+                // Schedule the next
+                setTimeout(doAjax, interval);
+            }
+        });
+    }
+    setTimeout(doAjax, interval);
+  </script>
+{% endblock javascripts %}
