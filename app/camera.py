@@ -238,10 +238,7 @@ def start_video(request):
 
     #thread = Thread(target = threaded_main, args = (high_url, serial,))
     flag_auth = 1
-<<<<<<< HEAD
-=======
     threaded_authorize(high_url, serial)
->>>>>>> develop
     #thread.start()
     return HttpResponse(json.dumps({'status' : 'success'}), content_type="application/json")
 
