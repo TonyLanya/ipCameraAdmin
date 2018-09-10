@@ -179,6 +179,7 @@ AUTHORIZING
     var flag_auth = 0;
     function authorize() {
         console.log("authorize");
+        console.log(serial);
         $.ajax({
             type: 'GET',
             url: "cam-authorize",
