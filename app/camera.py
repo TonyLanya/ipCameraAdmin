@@ -211,6 +211,7 @@ def cam_authorize(request):
     serial = request.GET.get("serial")
     cam = Cameras.objects.filter(serial_number=serial)
     print(cam[0].auth_state)
+    print(cam[0].auth_res)
     auth_res = cam[0].auth_res
     if auth_res != None:
         user = Users.objects.filter(trained_name=auth_res)
