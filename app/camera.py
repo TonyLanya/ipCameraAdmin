@@ -159,8 +159,6 @@ def video_feed(request):
         recognizer = pickle.load(f)
     with open(static_url + "/face_models/" + prop_id + "/le.pickle", 'rb') as l:
         le = pickle.load(l)
-    #video = cv2.VideoCapture(rtsp_url)
-    video = cv2.VideoCapture(static_url + "/images/test.MP4")
     ### amazon
     ### rtsp
     return StreamingHttpResponse(gen(VideoCamera(static_url + "/images/test.MP4", vtype, recognizer, le)),content_type="multipart/x-mixed-replace;boundary=frame")
