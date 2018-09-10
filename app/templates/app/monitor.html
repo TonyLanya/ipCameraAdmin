@@ -170,14 +170,14 @@ AUTHORIZING
             dataType: 'json',
             success: function (data) {
                 flag_auth = 1;
-                authorize();
+                authorize(serial);
             }
         });
         $("#videoContainer").show();
     });
 
     var flag_auth = 0;
-    function authorize() {
+    function authorize(serial) {
         console.log("authorize");
         console.log(serial);
         $.ajax({
@@ -208,7 +208,7 @@ AUTHORIZING
             complete: function() {
                 if( flag_auth == 1 ) {
                     //setTimeout(authorize, 2000);
-                    authorize();
+                    authorize(serial);
                 }
             }
         });
