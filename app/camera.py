@@ -411,6 +411,9 @@ def start_video(request):
     user = request.user.username
     rtsp_url = request.POST.get('streamUrl')
     high_url = request.POST.get('high')
+    high_url = high_url + "&subtype=0"
+    print("++++++++++++++++++++++++")
+    print(high_url)
     cam_url = request.POST.get('camurl')
     serial = request.POST.get('serial')
     Cameras.objects.filter(serial_number=serial).update(auth_state="AUTHORIZING")

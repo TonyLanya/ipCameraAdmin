@@ -238,7 +238,7 @@ AUTHORIZING
                 if (view_status == 0) {
                     rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
                     url = "https://" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"];
-                    high = "rtsp://" + data[0]["fields"]["login"] + ":"
+                    high = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=0";
                     serial = data[0]["fields"]["serial_number"];
                     console.log("----------------");
                     console.log(serial);
