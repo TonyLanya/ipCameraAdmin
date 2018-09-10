@@ -134,8 +134,11 @@ class VideoCamera(object):
             self.video_status = 0
             return None
         try:
+            print("try----")
             image = self.detect_face(image)
+            print("YYYYYYYY")
         except:
+            print("NNNNNNNNNNN")
             k=1
         # if flag:
         #     self.draw_rectangle(image, rect)
