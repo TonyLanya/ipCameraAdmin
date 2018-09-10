@@ -162,11 +162,9 @@ def video_feed(request):
         with open(static_url + "/face_models/" + prop_id + "/le.pickle", 'rb') as l:
             le = pickle.load(l)
         rtsp = rtsp + '&subtype=1'
-        #video = cv2.VideoCapture(rtsp_url)
-        video = cv2.VideoCapture(rtsp)
         ### amazon
         ### rtsp
-        return StreamingHttpResponse(gen(VideoCamera(static_url + "/images/test.MP4", vtype, recognizer, le)),content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(VideoCamera(rtsp, vtype, recognizer, le)),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")
 
