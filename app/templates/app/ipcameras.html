@@ -160,6 +160,7 @@
                   <th>Address</th>
                   <th>Port</th>
                   <th>Serial_number</th>
+                  <th>AuthUser</th>
                   <th>Property_id</th>
                   <th>Status</th>
                   <th>CreateTime</th>
@@ -316,6 +317,7 @@
                     { "data" : "fields.address" },
                     { "data" : "fields.port" },
                     { "data" : "fields.serial_number" },
+                    { "data" : "fields.auth_user" },
                     { "data" : "fields.property_id" },
                     { mRender: function (data, type, row) {
                         if (row["fields"]["online_status"] == true) {
@@ -361,7 +363,7 @@
             type: 'POST',
             url: "/camera/reset-camera",
             data: {
-                serial : serial
+                id : serial
             },
             dataType: 'json',
             success: function (data) {
