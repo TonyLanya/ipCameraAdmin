@@ -243,7 +243,7 @@ AUTHORIZING
                     url = "https://" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"];
                     high = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
                     serial = data[0]["fields"]["serial_number"];
-                    $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
+                    $("#mainVideo").html("<img src=\"/video_feed?serial=" + serial +"&streamUrl=" + rtsp + "\" class=\"main-video\">");
                     //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
                     //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
                     $.ajax({

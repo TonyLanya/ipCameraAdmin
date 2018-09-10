@@ -44,6 +44,7 @@ class Users(models.Model):
     phoneno = models.CharField(max_length=50)
     property_id = models.CharField(max_length=100, null=True)
     registered = models.BooleanField(default=False)
+    trained_name = models.CharField(max_length=100, null=True)
     created_at = models.DateTimeField(default=timezone.now)
 
 class Properties(models.Model):

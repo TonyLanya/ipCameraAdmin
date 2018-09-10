@@ -65,6 +65,12 @@ def agents_html(request):
     template = loader.get_template('app/agents.html')
     return HttpResponse(template.render(context, request))
 
+@login_required(login_url='/login')
+def alerts_html(request):
+    context = {}
+    template = loader.get_template('app/alerts.html')
+    return HttpResponse(template.render(context, request))
+
 def cameras_asJson(request):
     prop_id = request.GET.get("prop_id")
     if prop_id:

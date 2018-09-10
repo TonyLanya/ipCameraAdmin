@@ -3,7 +3,7 @@ from .models import Users, Properties
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.core import serializers
-import camera
+#import camera
 import numpy as np
 import os
 
@@ -15,7 +15,6 @@ def create_new(request):
     new_user.name = request.POST.get('name')
     new_user.phoneno = request.POST.get('phoneno')
     new_user.property_id = request.POST.get('propid')
-    print request.POST.get('propid')
     new_user.save()
     return HttpResponse(json.dumps({'status' : 'success'}), content_type="application/json")
 
@@ -78,11 +77,11 @@ def register_photo(request):
         user = Users.objects.filter(pk=id)
         prop_id = user[0].property_id
         sourceurl = static_url + "/images/" + prop_id + "/" + user[0].name + ".jpg"
-        suc, source = camera.get_source(sourceurl)
-        if suc == 0:
-            return HttpResponse(json.dumps({'status' : "failed"}), content_type="application/json")
-        np.savetxt(static_url + "/images/" + prop_id + "/" + user[0].name + ".csv", source, delimiter=",")
-        Users.objects.filter(pk=id).update(registered=True)
+        # suc, source = camera.get_source(sourceurl)
+        # if suc == 0:
+        #     return HttpResponse(json.dumps({'status' : "failed"}), content_type="application/json")
+        # np.savetxt(static_url + "/images/" + prop_id + "/" + user[0].name + ".csv", source, delimiter=",")
+        # Users.objects.filter(pk=id).update(registered=True)
         return HttpResponse(json.dumps({'status' : "success"}), content_type="application/json")
     except:
         return HttpResponse(json.dumps({'status' : "failed"}), content_type="application/json")
