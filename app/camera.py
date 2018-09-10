@@ -133,7 +133,10 @@ class VideoCamera(object):
         if ret == False:
             self.video_status = 0
             return None
-        image = self.detect_face(image)
+        try:
+            image = self.detect_face(image)
+        except:
+            k=1
         # if flag:
         #     self.draw_rectangle(image, rect)
         ret,jpeg = cv2.imencode('.jpg',image)
@@ -399,8 +402,11 @@ def threaded_main(rtsp_url, serial):
         if cam[0].auth_state == "AUTHORIZED":
             break
         #thread = Thread(target = threaded_authorize, args = (rtsp_url, serial,))
-        if threaded_authorize(video, serial, recognizer, le):
-            break
+        try:
+            if threaded_authorize(video, serial, recognizer, le):
+                break
+        except:
+            k=1
         #thread.start()
         #time.sleep(1)
 
