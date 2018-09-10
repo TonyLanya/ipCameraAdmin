@@ -239,6 +239,7 @@ AUTHORIZING
                     rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
                     url = "https://" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"];
                     high = "rtsp://" + data[0]["fields"]["login"] + ":"
+                    serial = data[0]["fields"]["serial"];
                     playSound();
                     $("#mainVideo").html("<img src=\"/video_feed?serial=" + data[0]["fields"]["serial_number"] +"&streamUrl=" + rtsp + "\" class=\"main-video\">");
                     //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
@@ -256,7 +257,7 @@ AUTHORIZING
                         success: function (data) {
                             view_status = 1;
                             flag_auth = 1;
-                            authorize();
+                            authorize(serial);
                         }
                     });
                     $("#videoContainer").show();
