@@ -84,6 +84,7 @@ class VideoCamera(object):
 
             # filter out weak detections
             if confidence > 0.5:
+                print("YOU+++++")
                 # compute the (x, y)-coordinates of the bounding box for
                 # the face
                 box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
