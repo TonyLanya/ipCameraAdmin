@@ -86,6 +86,12 @@
                 </div>
               </div>
               <div class="form-group row">
+                <label for="editTrainedName" class="col-sm-3 text-right control-label col-form-label">TrainedName : </label>
+                <div class="col-sm-9">
+                  <input id="editTrainedName" type="text" class="form-control" placeholder="Trained Name">
+                </div>
+              </div>
+              <div class="form-group row">
                     <label for="editProperty" class="col-sm-3 text-right control-label col-form-label">Property : </label>
                     <div class="col-sm-9">
                         <select id="editProperty" name="character"></select>
@@ -107,6 +113,7 @@
                 <tr>
                   <th>Name</th>
                   <th>phoneno</th>
+                  <th>TrainedName</th>
                   <th>Actions</th>
                   <th>Photo</th>
                   <th>Status</th>
@@ -139,6 +146,7 @@
             "columns": [
                     { "data" : "fields.name" },
                     { "data" : "fields.phoneno" },
+                    { "data" : "fields.trained_name" },
                     { mRender: function (data, type, row) {
                         return '<button onclick="edit(\'' + row["pk"] +'\')" data-toggle="modal" data-target="#editUser">Edit</button>' + '<button onclick="remove(\'' + row["pk"] +'\')">Remove</button>';
                     }},
@@ -195,6 +203,7 @@
                 $("#editName").val(data["name"]);
                 $("#editPhoneno").val(data["phoneno"]);
                 $("#editProperty").val(data["prop_id"]);
+                $("#editTrainedName").val(data["trainedname"]);
                 $("#editUserid").val(data["pk"]);
             }
         });
@@ -205,6 +214,7 @@
         prename = $("#editName").val();
         prephoneno = $("#editPhoneno").val();
         prepropid = $('#editProperty').val();
+        pretrainednmae = $("#editTrainedName").val();
         $.ajax({
             /* the route pointing to the post function */
             url: '/user/update',
@@ -214,7 +224,8 @@
                 id: id,
                 name: prename,
                 phoneno: prephoneno,
-                propid : prepropid
+                propid : prepropid,
+                trainedname : pretrainednmae
             },
             dataType: 'JSON',
             /* remind that 'data' is the response of the AjaxController */

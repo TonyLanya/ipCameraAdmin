@@ -40,6 +40,7 @@ def get_user(request):
         ret["name"] = user[0].name
         ret["phoneno"] = user[0].phoneno
         ret["pk"] = str(user[0].id)
+        ret["trainedname"] = user[0].trained_name
         if propid != None:
             properties = Properties.objects.get(pk=propid)
             ret['prop_name'] = properties.address
@@ -58,6 +59,7 @@ def update_user(request):
         name = request.POST.get("name")
         phoneno = request.POST.get("phoneno")
         propid = request.POST.get("propid")
+        trainedname = request.POST.get("trainedname")
         user = Users.objects.get(pk=id)
         # if user.registered == 1:
         #     if (user.name != name) or (user.property_id != propid) :
@@ -67,6 +69,7 @@ def update_user(request):
         user.name = name
         user.phoneno = phoneno
         user.property_id = propid
+        user.trained_name = trainedname
         user.save()
         return HttpResponse(json.dumps({'status' : "success"}), content_type="application/json")
     except:
