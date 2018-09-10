@@ -10,10 +10,12 @@ import datetime
 import cv2 
 import time
 import io
-import openface
+#import openface
 import numpy as np
 from threading import Thread
-from skimage import img_as_ubyte
+#from skimage import img_as_ubyte
+import pickle
+import imutils
 
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static
@@ -21,10 +23,16 @@ static_url = "/root/ipCameraAdmin/app/static"
 
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static/openface/shape_predictor_68_face_landmarks.dat
-align = openface.AlignDlib(static_url + "/openface/shape_predictor_68_face_landmarks.dat")
+#align = openface.AlignDlib(static_url + "/openface/shape_predictor_68_face_landmarks.dat")
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static/openface/nn4.small2.v1.t7
-net = openface.TorchNeuralNet(static_url + "/openface/nn4.small2.v1.t7", 96)
+#net = openface.TorchNeuralNet(static_url + "/openface/nn4.small2.v1.t7", 96)
+
+protoPath = static_url + "/face_detection_model/deploy.prototxt"
+modelPath = static_url + "/face_detection_model/res10_300x300_ssd_iter_140000.caffemodel"
+detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
+
+embedder = cv2.dnn.readNetFromTorch(static_url + "/openface_nn4.small2.v1.t7")
 
 @csrf_exempt
 def create_new(request):
@@ -42,35 +50,74 @@ def create_new(request):
     return HttpResponse(json.dumps({'status' : 'success'}), content_type="application/json")
 
 class VideoCamera(object):
-    def __init__(self, rtsp_url, vtype):
+    def __init__(self, rtsp_url, vtype, recognizer, le):
         self.video = cv2.VideoCapture(rtsp_url)
         self.video_status = 1
         ### amazon
         ### /home/ubuntu/ipCameraAdmin/app/static/openface/lbpcascade_frontalface.xml
         self.vtype = vtype
+        self.recognizer = recognizer
+        self.le = le
         self.face_cascade = cv2.CascadeClassifier(static_url + '/openface/lbpcascade_frontalface.xml')
     def __del__(self):
         self.video.release()
 
-    def detect_face(self, img):
-        # convert the test image to gray image as opencv face detector expects gray images
+    def detect_face(self, frame):
+        frame = imutils.resize(frame, width=600)
+        (h, w) = frame.shape[:2]
 
-        # let's detect multiscale (some images may be closer to camera than others) images
-        # result is a list of faces
+        # construct a blob from the image
+        imageBlob = cv2.dnn.blobFromImage(
+            cv2.resize(frame, (300, 300)), 1.0, (300, 300),
+            (104.0, 177.0, 123.0), swapRB=False, crop=False)
 
+        # apply OpenCV's deep learning-based face detector to localize
+        # faces in the input image
+        detector.setInput(imageBlob)
+        detections = detector.forward()
 
-        img = np.uint8(img)
-        faces = self.face_cascade.detectMultiScale(img,scaleFactor=1.45 ,minNeighbors=0)
-        # if no faces are detected then return original img
-        if (len(faces) == 0):
-            return 0, None, None
+        # loop over the detections
+        for i in range(0, detections.shape[2]):
+            # extract the confidence (i.e., probability) associated with
+            # the prediction
+            confidence = detections[0, 0, i, 2]
 
-        # under the assumption that there will be only one face,
-        # extract the face area
-        (x, y, w, h) = faces[0]
+            # filter out weak detections
+            if confidence > 0.5:
+                # compute the (x, y)-coordinates of the bounding box for
+                # the face
+                box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                (startX, startY, endX, endY) = box.astype("int")
 
-        # return only the face part of the image
-        return len(faces), img[y:y + w, x:x + h], faces[0]
+                # extract the face ROI
+                face = frame[startY:endY, startX:endX]
+                (fH, fW) = face.shape[:2]
+
+                # ensure the face width and height are sufficiently large
+                if fW < 20 or fH < 20:
+                    continue
+
+                # construct a blob for the face ROI, then pass the blob
+                # through our face embedding model to obtain the 128-d
+                # quantification of the face
+                faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
+                    (96, 96), (0, 0, 0), swapRB=True, crop=False)
+                embedder.setInput(faceBlob)
+                vec = embedder.forward()
+
+                # perform classification to recognize the face
+                preds = self.recognizer.predict_proba(vec)[0]
+                j = np.argmax(preds)
+                proba = preds[j]
+                name = self.le.classes_[j]
+                # draw the bounding box of the face along with the
+                # associated probability
+                text = "{}: {:.2f}%".format(name, proba * 100)
+                y = startY - 10 if startY - 10 > 10 else startY + 10
+                cv2.rectangle(frame, (startX, startY), (endX, endY),
+                    (0, 0, 255), 2)
+                #cv2.putText(frame, text, (startX, y),cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+        return frame
 
     def draw_rectangle(self, img, rect):
         (x, y, w, h) = rect
@@ -86,13 +133,9 @@ class VideoCamera(object):
         if ret == False:
             self.video_status = 0
             return None
-        flag, face, rect = self.detect_face(image)
-        if flag > 0:
-            print "$$$$$$$$"
-            print flag
-            print "DETECTED"
-            print "$$$$$$$$"
-            self.draw_rectangle(image, rect)
+        image = self.detect_face(image)
+        # if flag:
+        #     self.draw_rectangle(image, rect)
         ret,jpeg = cv2.imencode('.jpg',image)
         return jpeg.tobytes()
     def get_status(self):
@@ -111,11 +154,19 @@ def gen(camera):
 def video_feed(request):
     try:
         rtsp = request.GET.get('streamUrl')
-        rtsp = rtsp + "&subtype=1"
         vtype = request.GET.get('vtype')
+        cam = Cameras.objects.filter(serial_number=request.GET.get('serial'))
+        prop_id = cam[0].property_id
+        with open(static_url + "/face_models/" + prop_id + "/recognizer.pickle", 'rb') as f:
+            recognizer = pickle.load(f)
+        with open(static_url + "/face_models/" + prop_id + "/le.pickle", 'rb') as l:
+            le = pickle.load(l)
+        rtsp = rtsp + '&subtype=1'
+        #video = cv2.VideoCapture(rtsp_url)
+        video = cv2.VideoCapture(rtsp)
         ### amazon
         ### rtsp
-        return StreamingHttpResponse(gen(VideoCamera(rtsp, vtype)),content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(VideoCamera(static_url + "/images/test.MP4", vtype, recognizer, le)),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")
 
@@ -158,10 +209,10 @@ def getRep(align, net, bgrImg, imgDim, verbose = None):
 def cam_authorize(request):
     serial = request.GET.get("serial")
     cam = Cameras.objects.filter(serial_number=serial)
-    print cam[0].auth_state
+    print(cam[0].auth_state)
     auth_res = cam[0].auth_res
     if auth_res != None:
-        user = Users.objects.filter(pk=auth_res)
+        user = Users.objects.filter(trained_name=auth_res)
         prop_id = user[0].property_id
         prop = Properties.objects.filter(pk=prop_id)
         return HttpResponse(json.dumps({'status' : cam[0].auth_state, 'name' : user[0].name, 'phoneno' : user[0].phoneno, 'address' : prop[0].address, 'policeph' : prop[0].police}), content_type="application/json")
@@ -169,55 +220,133 @@ def cam_authorize(request):
 
 flag_auth = 0
 
-def threaded_authorize(rtsp_url, serial, sources, users):
-    print serial
+def threaded_authorize(video, serial, recognizer, le):
+    print(serial)
     cam = Cameras.objects.filter(serial_number=serial)
     if cam[0].auth_state == "AUTHORIZED":
         return 1
     ### amazon
     ### video = cv2.VideoCapture(rtsp_url)
-    video = cv2.VideoCapture(rtsp_url)
-    success, realImg = video.read()
-    target = getRep(align, net, realImg, 96)
-    if isinstance(target, str):
-        print(target)
-        if target == "Unable to load image":
-            if cam[0].auth_state != "AUTHORIZED":
-                cam.update(auth_state="DETECT ERROR")
-            return 0
-        if target == "Unable to find face":
-            if cam[0].auth_state != "AUTHORIZED":
-                cam.update(auth_state="NO PERSON2")
-            return 0
-        if target == "Unable to align":
-            if cam[0].auth_state != "AUTHORIZED":
-                cam.update(auth_state="FIX ALIGN")
-            return 0
-    flag = 0
-    inf = 0
-    for source in sources:
-        d = source - target
-        np.set_printoptions(precision=2)
-        res_detect = np.dot(d, d)
-        print("====================")
-        print(res_detect)
-        print("====================")
-        if res_detect < 0.99:
-            flag = 1
-            break
-        else:
-            inf = inf + 1
-    if flag:
-        if cam[0].auth_state != "AUTHORIZED":
-            cam.update(auth_state="AUTHORIZED")
-            cam.update(auth_res=users[inf])
-        return 1
-    else :
-        if cam[0].auth_state != "AUTHORIZED":
-            cam.update(auth_state="NOT AUTHORIZED")
-        return 0
+    #video = cv2.VideoCapture(static_url + "/images/test.MP4")
+
+
+
+    ret, frame = video.read()
+    frame = imutils.resize(frame, width=600)
+    (h, w) = frame.shape[:2]
+
+    # construct a blob from the image
+    imageBlob = cv2.dnn.blobFromImage(
+		cv2.resize(frame, (300, 300)), 1.0, (300, 300),
+		(104.0, 177.0, 123.0), swapRB=False, crop=False)
+
+    # apply OpenCV's deep learning-based face detector to localize
+	# faces in the input image
+    detector.setInput(imageBlob)
+    detections = detector.forward()
+
+    # loop over the detections
+    for i in range(0, detections.shape[2]):
+        # extract the confidence (i.e., probability) associated with
+        # the prediction
+        confidence = detections[0, 0, i, 2]
+
+        # filter out weak detections
+        if confidence > 0.5:
+            # compute the (x, y)-coordinates of the bounding box for
+            # the face
+            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+            (startX, startY, endX, endY) = box.astype("int")
+
+            # extract the face ROI
+            face = frame[startY:endY, startX:endX]
+            (fH, fW) = face.shape[:2]
+
+            # ensure the face width and height are sufficiently large
+            if fW < 20 or fH < 20:
+                continue
+
+            # construct a blob for the face ROI, then pass the blob
+            # through our face embedding model to obtain the 128-d
+            # quantification of the face
+            faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
+                (96, 96), (0, 0, 0), swapRB=True, crop=False)
+            embedder.setInput(faceBlob)
+            vec = embedder.forward()
+
+            # perform classification to recognize the face
+            preds = recognizer.predict_proba(vec)[0]
+            j = np.argmax(preds)
+            proba = preds[j]
+            name = le.classes_[j]
+
+            if name != "unknown":
+                if cam[0].auth_state != "AUTHORIZED":
+                    cam.update(auth_state="AUTHORIZED")
+                    cam.update(auth_res=name)
+                return 1
+            else:
+                if cam[0].auth_state != "AUTHORIZED":
+                    if cam[0].auth_state != "NOT AUTHORIZED":
+                        cam.update(auth_state="NOT AUTHORIZED")
+                return 0
+
+            # draw the bounding box of the face along with the
+            # associated probability
+            # text = "{}: {:.2f}%".format(name, proba * 100)
+            # y = startY - 10 if startY - 10 > 10 else startY + 10
+            # cv2.rectangle(frame, (startX, startY), (endX, endY),
+            # 	(0, 0, 255), 2)
+            # cv2.putText(frame, text, (startX, y),
+            # 	cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+
     if cam[0].auth_state != "AUTHORIZED":
-        cam.update(auth_state="NOT DETECTED")
+        if cam[0].auth_state != "NOT DETECTED":
+            cam.update(auth_state="NOT DETECTED")
+
+
+
+    # success, realImg = video.read()
+    # target = getRep(align, net, realImg, 96)
+    # if isinstance(target, str):
+    #     print(target)
+    #     if target == "Unable to load image":
+    #         if cam[0].auth_state != "AUTHORIZED":
+    #             cam.update(auth_state="DETECT ERROR")
+    #         return 0
+    #     if target == "Unable to find face":
+    #         if cam[0].auth_state != "AUTHORIZED":
+    #             cam.update(auth_state="NO PERSON2")
+    #         return 0
+    #     if target == "Unable to align":
+    #         if cam[0].auth_state != "AUTHORIZED":
+    #             cam.update(auth_state="FIX ALIGN")
+    #         return 0
+    # flag = 0
+    # inf = 0
+    # for source in sources:
+    #     d = source - target
+    #     np.set_printoptions(precision=2)
+    #     res_detect = np.dot(d, d)
+    #     print("====================")
+    #     print(res_detect)
+    #     print("====================")
+    #     if res_detect < 0.99:
+    #         flag = 1
+    #         break
+    #     else:
+    #         inf = inf + 1
+    # if flag:
+    #     if cam[0].auth_state != "AUTHORIZED":
+    #         cam.update(auth_state="AUTHORIZED")
+    #         cam.update(auth_res=users[inf])
+    #     return 1
+    # else :
+    #     if cam[0].auth_state != "AUTHORIZED":
+    #         cam.update(auth_state="NOT AUTHORIZED")
+    #     return 0
+    # if cam[0].auth_state != "AUTHORIZED":
+    #     cam.update(auth_state="NOT DETECTED")
     return 0
 
 def get_source(sourceurl):
@@ -241,41 +370,38 @@ def get_source(sourceurl):
     return 1, source
 
 def threaded_main(rtsp_url, serial):
-    print "thread is running"
-    ### amazon
-    ### /home/ubuntu/ipCameraAdmin/app/static/images/patroleum.jpg
+    print("thread is running")
+    # cam = Cameras.objects.filter(serial_number=serial)
+    # prop_id = cam[0].property_id
+    # users = Users.objects.filter(property_id=prop_id)
+    # sources = []
+    # usrs = []
+    # for user in users:
+    #     if user.registered:
+    #         sourceurl = static_url + "/images/" + prop_id + "/" + user.name + ".csv"
+    #         source = np.genfromtxt(sourceurl, delimiter=',')
+    #         sources.append(source)
+    #         usrs.append(user.id)
+    # print sources
+    # if len(sources) == 0:
+    #     return
     cam = Cameras.objects.filter(serial_number=serial)
     prop_id = cam[0].property_id
-    users = Users.objects.filter(property_id=prop_id)
-    #sourceurl = "/home/out/development/gentelella/app/static/images/" + prop_id + "/" + user[1].name + ".png"
-    #print "============="
-    #print sourceurl
-    #print "============="
-    #source = get_source(sourceurl, serial)
-    #np.savetxt("/home/out/development/gentelella/app/static/images/" + prop_id + "/" + user[1].name + ".csv", source, delimiter=",")
-    print "/////////////////"
-    print len(users)
-    print "/////////////////"
-    sources = []
-    usrs = []
-    for user in users:
-        if user.registered:
-            sourceurl = static_url + "/images/" + prop_id + "/" + user.name + ".csv"
-            source = np.genfromtxt(sourceurl, delimiter=',')
-            sources.append(source)
-            usrs.append(user.id)
-    print sources
-    if len(sources) == 0:
-        return
+    with open(static_url + "/face_models/" + prop_id + "/recognizer.pickle", 'rb') as f:
+        recognizer = pickle.load(f)
+    with open(static_url + "/face_models/" + prop_id + "/le.pickle", 'rb') as l:
+        le = pickle.load(l)
+    #video = cv2.VideoCapture(rtsp_url)
+    video = cv2.VideoCapture(rtsp_url)
     while 1:
         cam = Cameras.objects.filter(serial_number=serial)
-        print cam[0].auth_user
+        print(cam[0].auth_user)
         if cam[0].auth_user == None:
             break
         if cam[0].auth_state == "AUTHORIZED":
             break
         #thread = Thread(target = threaded_authorize, args = (rtsp_url, serial,))
-        if threaded_authorize(rtsp_url, serial, sources, usrs):
+        if threaded_authorize(video, serial, recognizer, le):
             break
         #thread.start()
         #time.sleep(1)

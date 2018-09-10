@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from app import views, camera, user, properties, agents, auth
+from app import views, camera, user, properties, agents, auth, alerts
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^users', views.users_html),
     url(r'^properties', views.properties_html),
     url(r'^agents', views.agents_html),
+    url(r'^alerts', views.alerts_html),
     url(r'^login', auth_views.login),
     url(r'^monitor', views.monitor_html),
     #url(r'^authenticate', auth.login, {'template_name' : ''}),
@@ -43,6 +44,8 @@ urlpatterns = [
     url(r'^property/get-property', properties.get_property),
     url(r'^property/update', properties.update_property),
     url(r'^property/remove', properties.remove_property),
+
+    url(r'^get_alerts_table', alerts.alerts_asJson, name='get_alerts_table'),
 
     url(r'^server-side', views.cameras_asJson, name='my_ajax_url'),
     url(r'^get_user_table', views.users_asJson, name='get_user_table'),
