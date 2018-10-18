@@ -179,8 +179,8 @@
     $('#example tbody').on('click', 'tr', function() {
       var data = $("#example").DataTable().row(this).data();
       console.log(data);
-      //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
-      rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
+      rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+      //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
         $.ajax({
             type: 'POST',
             url: "start-video",
