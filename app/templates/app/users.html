@@ -1,0 +1,135 @@
+{% extends "app/base_site.html" %}
+
+{% block title %} Tables {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block video %}
+<div class="video-container" id="videoContainer">
+<video id="shaka" class="player" autoplay></video>
+<canvas id="ipCamera" class="canvas"></canvas>
+<button onclick="stop_cam();" style="width: 200px;position: absolute;left: calc(50% - 100px);top: calc(50% + 240px);">
+    End Camera
+</button>
+</div>
+{% endblock video %}
+
+{% block content %}
+<input type="hidden" id="hls" style="margin-left: 500px;" value="{{ url }}">
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>Users <small>Add or Edit Users</small></h3>
+      </div>
+    </div>
+    <div id="createNew" class="modal" role="dialog">
+      <div class="modal-dialog modal-primary">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Create New User</h4>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                  <div class="form-group row">
+                      <label for="editName" class="col-sm-3 text-right control-label col-form-label">Name : </label>
+                      <div class="col-sm-9">
+                          <input id="createName" type="text" class="form-control" placeholder="User Name">
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="editPhoneno" class="col-sm-3 text-right control-label col-form-label">Phone No : </label>
+                      <div class="col-sm-9">
+                          <input id="createPhoneno" type="email" class="form-control" placeholder="Phone Number">
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" onclick="onCreate()" class="btn btn-success">Create</button>
+              </div>
+          </div>
+
+      </div>
+  </div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <button data-toggle="modal" data-target="#createNew"> Create New</button>
+        <table cellpadding="0" cellspacing="0" border="0" id="example">
+            <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>phoneno</th>
+                  <th>CreateTime</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/2.4.1/shaka-player.compiled.js"></script>
+  <script type="text/javascript" language="javascript" class="init">
+
+    $(document).ready(function() {
+        $('#example').dataTable( {
+            "processing": true,
+            "ajax": {
+                "processing": true,
+                "url": "{% url 'get_user_table' %}",
+                "dataSrc": ""
+            },
+
+            "columns": [
+                    { "data" : "fields.name" },
+                    { "data" : "fields.phoneno" },
+                    { "data" : "fields.created_at" },
+                ]
+        } );
+    } );
+    $('#example tbody').on('click', 'tr', function() {
+      var data = $("#example").DataTable().row(this).data();
+      alert('you clicked on ' + data["fields"]['name'] + '\'s row');
+    });
+    function onCreate() {
+      prename = $("#createName").val();
+      prephoneno = $("#createPhoneno").val();
+      if (prename == '') {
+        alert("Please insert User Name");
+        return;
+      }
+      $.ajax({
+        /* the route pointing to the post function */
+        url: '/user/create-new',
+        type: 'POST',
+        /* send the csrf-token and the input to the controller */
+        data: {
+            name: prename,
+            phoneno: prephoneno,
+        },
+        dataType: 'JSON',
+        /* remind that 'data' is the response of the AjaxController */
+        success: function (data) {
+          console.log(data);
+          if ( data.status == "failed" ) {
+              alert(data.msg);
+          } else {
+              alert(data.status);
+              location.reload();
+          }
+        }
+      });
+    }
+  </script>
+{% endblock javascripts %}
