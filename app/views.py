@@ -77,7 +77,7 @@ def agents_asJson(request):
 
 def get_serial(text):
     try:
-        found = re.search('Alarm Device Name: (.+?) Alarm Name', text).group(1)
+        found = re.search('Alarm Device Name: (.+?) ', text).group(1)
     except AttributeError:
         # AAA, ZZZ not found in the original string
         found = '' # apply your error handling
