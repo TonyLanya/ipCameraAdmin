@@ -36,6 +36,7 @@ var noti = document.getElementById("show-noti");
 var close = document.getElementsByClassName("close")[0];
 
 $("#show-noti").click(function() {
+    console.log("show-noti");
     //modal.style.display = "block";
     $("#myModal").css("display", "block");
     $.ajax({
@@ -54,7 +55,7 @@ $("#show-noti").click(function() {
                 }
                 $('#modal-content').empty();
                 data.forEach(function(element) {
-                    $('#modal-content').append('<div class="noti-items">' + element["fields"]["subject"] + " " + element["fields"]["message_id"] + '</br><small style="margin-left:20px;">' + element["fields"]["content"] + '</small>' + '</div>');
+                    $('#modal-content').append('<div class="noti-items" onclick="viewNoti(' + "ddd" +')">' + element["fields"]["subject"] + " " + element["fields"]["message_id"] + '</br><small style="margin-left:20px;">' + element["fields"]["content"] + '</small>' + '</div>');
                 });
             },
             complete: function (data) {
@@ -63,6 +64,10 @@ $("#show-noti").click(function() {
             }
     });
 });
+
+function viewNoti() {
+    alert("ddd");
+}
 
 $("#close-modal").click(function() {
     $("#myModal").css("display", "none");

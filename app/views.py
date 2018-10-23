@@ -73,6 +73,14 @@ def agents_asJson(request):
     object_list = Agents.objects.all()
     json = serializers.serialize('json', object_list)
     return HttpResponse(json, content_type='application/json')
+
+def get_serial(text):
+    try:
+        found = re.search('Alarm Device Name: (.+?) Alarm Name', text).group(1)
+    except AttributeError:
+        # AAA, ZZZ not found in the original string
+        found = '' # apply your error handling
+    return found
     
 @csrf_exempt
 def email_receiver(request):
@@ -83,6 +91,7 @@ def email_receiver(request):
     new_email.message_id = request.POST.get('Message-Id')
     new_email.subject = request.POST.get('Subject')
     new_email.content = request.POST.get('stripped-text')
+    new_email.serial = get_serial(new_email.content)
     new_email.save()
     return HttpResponse("ok")
 

@@ -33,6 +33,7 @@ class Emails(models.Model):
     subject = models.CharField(max_length=250)
     content = models.TextField(blank=True, null=True)
     notify = models.BooleanField(default=False)
+    serial = models.CharField(max_length=50, null=True)
     created_at = models.DateTimeField(default=timezone.now)
 
 class Users(models.Model):
