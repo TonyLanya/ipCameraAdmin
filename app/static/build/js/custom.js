@@ -55,7 +55,7 @@ $("#show-noti").click(function() {
                 }
                 $('#modal-content').empty();
                 data.forEach(function(element) {
-                    $('#modal-content').append('<div class="noti-items" onclick="viewNoti(' + "ddd" +')">' + element["fields"]["subject"] + " " + element["fields"]["message_id"] + '</br><small style="margin-left:20px;">' + element["fields"]["content"] + '</small>' + '</div>');
+                    $('#modal-content').append('<div class="noti-items" onclick="viewNoti(\'' + element["fields"]["serial"] +'\')">' + element["fields"]["subject"] + " " + element["fields"]["message_id"] + '</br><small style="margin-left:20px;">' + element["fields"]["content"] + '</small>' + '</div>');
                 });
             },
             complete: function (data) {
@@ -65,8 +65,35 @@ $("#show-noti").click(function() {
     });
 });
 
-function viewNoti() {
-    alert("ddd");
+function viewNoti(serial) {
+    console.log(serial);
+    $("#myModal").hide()
+    $.ajax({
+        type: 'POST',
+        url: "get-camera",
+        dataType: "json",
+        data: {
+            "serial" : serial,
+        },
+        success: function (data) {
+            console.log(data[0]);
+            rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+            //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
+              $.ajax({
+                  type: 'POST',
+                  url: "start-video",
+                  data: {
+                      streamUrl: rtsp,
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                      console.log(data);
+                      $("#mainVideo").html("<img src=\"{% url 'video_feed' %}\" class=\"main-video\">");
+                  }
+              });
+            $("#videoContainer").show();
+        }
+    });
 }
 
 $("#close-modal").click(function() {

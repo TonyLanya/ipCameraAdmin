@@ -8,7 +8,6 @@ from django.views.decorators import gzip
 import json
 import datetime
 import cv2 
-import face_recognition
 rtsp_url = ''
 
 tt = 112
@@ -173,3 +172,11 @@ def get_record(request):
     #     return HttpResponse(json.dumps({'status' : 'success', 'record' : record}), content_type="application/json")
     # else:
     #     return HttpResponse(json.dumps({'status' : 'success', 'record' : data}), content_type="application/json")
+
+@csrf_exempt
+def get_camera(request):
+    serial = request.POST.get("serial")
+    print(serial)
+    object_list = Cameras.objects.filter(serial_number=serial)
+    json = serializers.serialize('json', object_list)
+    return HttpResponse(json, content_type='application/json')
