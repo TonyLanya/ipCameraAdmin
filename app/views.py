@@ -100,3 +100,7 @@ def get_notify(request):
     object_list = Emails.objects.filter(notify=False)
     json = serializers.serialize('json', object_list)
     return HttpResponse(json, content_type='application/json')
+
+def remove_notis(request):
+    Emails.objects.filter(notify=False).update(notify=True)
+    return HttpResponse('')

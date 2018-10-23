@@ -37,5 +37,6 @@ urlpatterns = [
     url(r'^get-record', camera.get_record),
     url(r'^start-record', camera.start_record),
     url(r'^stop-record', camera.stop_record),
-    url(r'^get-camera', camera.get_camera)
+    url(r'^get-camera', camera.get_camera),
+    url(r'^remove-notis', views.remove_notis)
 ]

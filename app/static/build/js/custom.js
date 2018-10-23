@@ -65,6 +65,16 @@ $("#show-noti").click(function() {
     });
 });
 
+function removeNotis() {
+    $.ajax({
+        type: 'GET',
+        url: "remove-notis",
+        success: function () {
+            location.reload();
+        }
+    });
+}
+
 function viewNoti(serial) {
     console.log(serial);
     $("#myModal").hide()
@@ -77,7 +87,8 @@ function viewNoti(serial) {
         },
         success: function (data) {
             console.log(data[0]);
-            rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+            //rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+            rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_10_22_00_00_00&end_time=2018_10_22_00_10_00";
             //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
               $.ajax({
                   type: 'POST',
