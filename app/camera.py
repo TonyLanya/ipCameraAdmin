@@ -12,7 +12,6 @@ from PIL import Image
 import io
 import boto3
 rtsp_url = ''
-rekognition = boto3.client("rekognition")
 BUCKET = "iocameraadmin.skydeveloperonline.com"
 KEY_SOURCE = "patroleum/patroleum.jpg"
 
@@ -123,6 +122,7 @@ def start_record(request):
 class VideoCamera(object):
     def __init__(self):
         global rtsp_url
+        #self.video = cv2.VideoCapture("D:\\1work\\36-django-ipcamera\\django-gentelella\\ipCameraAdmin\\app\\vidme.mp4")
         self.video = cv2.VideoCapture(rtsp_url)
     def __del__(self):
         self.video.release()
@@ -150,9 +150,12 @@ def video_feed(request):
 
 @csrf_exempt
 def cam_authorize(request):
+    global rtsp_url
     video = cv2.VideoCapture(rtsp_url)
-    # video = cv2.VideoCapture("D:\\1work\\36-django-ipcamera\\django-gentelella\\ipCameraAdmin\\app\\vidme.mp4")
+    #video = cv2.VideoCapture("D:\\1work\\36-django-ipcamera\\django-gentelella\\ipCameraAdmin\\app\\vidme.mp4")
     success, frame = video.read()
+    if success == False:
+        return HttpResponse(json.dumps({'status' : 'AUTHORIZING'}), content_type="application/json")
     pil_img = Image.fromarray(frame) # convert opencv frame (with type()==numpy) into PIL Image
     stream = io.BytesIO()
     pil_img.save(stream, format='JPEG') # convert PIL Image to Bytes
@@ -170,19 +173,23 @@ def cam_authorize(request):
     #     else :
     #         return HttpResponse(json.dumps({'status' : 'NOT AUTHORIZED'}), content_type="application/json")
     # return HttpResponse(json.dumps({'status' : 'NO ONE DETECTED'}), content_type="application/json")
-    threshold=80
-    response = rekognition.compare_faces(
-	    SourceImage={
-			"S3Object": {
-				"Bucket": BUCKET,
-				"Name": KEY_SOURCE,
-			}
-		},
-		TargetImage={
-			'Bytes': bin_img
-		},
-	    SimilarityThreshold=threshold,
-	)
+    threshold = 80
+    rekognition = boto3.client("rekognition")
+    try:
+        response = rekognition.compare_faces(
+            SourceImage={
+                "S3Object": {
+                    "Bucket": BUCKET,
+                    "Name": KEY_SOURCE,
+                    }
+            },
+            TargetImage={
+                'Bytes': bin_img
+            },
+            SimilarityThreshold=80,
+        )
+    except:
+        return HttpResponse(json.dumps({'status' : 'NO ONE DETECTED'}), content_type="application/json")
     matches =  response['FaceMatches']
     if ( len(matches) ):
         for match in matches:
