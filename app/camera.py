@@ -8,7 +8,13 @@ from django.views.decorators import gzip
 import json
 import datetime
 import cv2 
+from PIL import Image
+import io
+import boto3
 rtsp_url = ''
+rekognition = boto3.client("rekognition")
+BUCKET = "iocameraadmin.skydeveloperonline.com"
+KEY_SOURCE = "patroleum/patroleum.jpg"
 
 tt = 112
 shard = True
@@ -141,6 +147,54 @@ def video_feed(request):
         return StreamingHttpResponse(gen(VideoCamera()),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")
+
+@csrf_exempt
+def cam_authorize(request):
+    video = cv2.VideoCapture(rtsp_url)
+    # video = cv2.VideoCapture("D:\\1work\\36-django-ipcamera\\django-gentelella\\ipCameraAdmin\\app\\vidme.mp4")
+    success, frame = video.read()
+    pil_img = Image.fromarray(frame) # convert opencv frame (with type()==numpy) into PIL Image
+    stream = io.BytesIO()
+    pil_img.save(stream, format='JPEG') # convert PIL Image to Bytes
+    bin_img = stream.getvalue()
+    flag_auth = 0
+
+    # response = rekognition.compare_faces(Image={'Bytes': bin_img}) # call Rekognition
+    # if response['CelebrityFaces']: # print celebrity name if a celebrity is detected
+    #     for face in response['CelebrityFaces']:
+    #         print('Celebrity is {} with confidence of {}'.format(face['Name'], face['MatchConfidence']))
+    #         if face['MatchConfidence'] >= 0.8 :
+    #             flag_auth = 1
+    #     if flag_auth == 1 :
+    #         return HttpResponse(json.dumps({'status' : 'AUTHORIZED'}), content_type="application/json")
+    #     else :
+    #         return HttpResponse(json.dumps({'status' : 'NOT AUTHORIZED'}), content_type="application/json")
+    # return HttpResponse(json.dumps({'status' : 'NO ONE DETECTED'}), content_type="application/json")
+    threshold=80
+    response = rekognition.compare_faces(
+	    SourceImage={
+			"S3Object": {
+				"Bucket": BUCKET,
+				"Name": KEY_SOURCE,
+			}
+		},
+		TargetImage={
+			'Bytes': bin_img
+		},
+	    SimilarityThreshold=threshold,
+	)
+    matches =  response['FaceMatches']
+    if ( len(matches) ):
+        for match in matches:
+            print("Target Face ({Confidence}%)".format(**match['Face']))
+            print("  Similarity : {}%".format(match['Similarity']))
+            if match['Similarity'] > 80 :
+                flag_auth = 1
+        if flag_auth == 1 :
+            return HttpResponse(json.dumps({'status' : 'AUTHORIZED'}), content_type="application/json")
+        else :
+            return HttpResponse(json.dumps({'status' : 'NOT AUTHORIZED'}), content_type="application/json")
+    return HttpResponse(json.dumps({'status' : 'NO ONE DETECTED'}), content_type="application/json")
 
 @csrf_exempt
 def start_video(request):

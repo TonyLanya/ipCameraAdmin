@@ -11,6 +11,19 @@
 <div class="video-container" id="videoContainer">
 <!-- <video id="shaka" class="player" autoplay></video> -->
 <!-- <canvas id="ipCamera" class="canvas"></canvas> -->
+<div id="auth_res" style="    position: absolute;
+left: calc(50% - 350px);
+top: calc(50% - 395px);
+z-index: 1000;
+width: 704px;
+height: 155px;
+background-color: green;
+color: white;
+text-align: center;
+font-size: 70px;
+line-height: 155px;
+font-weight: bold;">
+</div>
 <div id="mainVideo">
     
 </div>
@@ -148,6 +161,7 @@
         $("#mainVideo").empty();
         $("#videoContainer").hide();
         location.reload();
+        flag_auth = 0;
     }
 
     function draw(v, c, w, h) {
@@ -181,6 +195,7 @@
       var data = $("#example").DataTable().row(this).data();
       console.log(data);
       rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+      //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
       //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
         $.ajax({
             type: 'POST',
@@ -191,6 +206,8 @@
             dataType: 'json',
             success: function (data) {
                 $("#mainVideo").html("<img src=\"/video_feed\" class=\"main-video\">");
+                flag_auth = 1;
+                authorize();
             }
         });
       $("#videoContainer").show();

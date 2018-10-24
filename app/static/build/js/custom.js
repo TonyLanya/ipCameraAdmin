@@ -32,6 +32,23 @@ function doAjax() {
 }
 setTimeout(doAjax, interval);
 
+var flag_auth = 0;
+function authorize() {
+    console.log("authorize");
+    $.ajax({
+        type: 'GET',
+        url: "cam-authorize",
+        dataType: 'json',
+        success: function (data) {
+            $("#auth_res").text(data["status"]);
+            console.log(data);
+        }
+    });
+    if( flag_auth == 1 ) {
+        setTimeout(authorize, 2000);
+    }
+}
+
 var noti = document.getElementById("show-noti");
 var close = document.getElementsByClassName("close")[0];
 
@@ -100,6 +117,8 @@ function viewNoti(serial) {
                   success: function (data) {
                       console.log(data);
                       $("#mainVideo").html("<img src=\"/video_feed\" class=\"main-video\">");
+                      flag_auth = 1;
+                      authorize();
                   }
               });
             $("#videoContainer").show();
