@@ -42,11 +42,13 @@ function authorize() {
         success: function (data) {
             $("#auth_res").text(data["status"]);
             console.log(data);
+        },
+        complete: function() {
+            if( flag_auth == 1 ) {
+                authorize();
+            }
         }
     });
-    if( flag_auth == 1 ) {
-        setTimeout(authorize, 2000);
-    }
 }
 
 var noti = document.getElementById("show-noti");
