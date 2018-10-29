@@ -17,6 +17,7 @@ class Cameras(models.Model):
     data_stream = models.CharField(max_length=50, null=True)
     serial_number = models.CharField(max_length=50)
     property_id = models.IntegerField(null=True)
+    online_status = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
 

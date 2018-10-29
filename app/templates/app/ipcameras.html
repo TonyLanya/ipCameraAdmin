@@ -130,6 +130,7 @@ AUTHORIZING
                   <th>Serial_number</th>
                   <th>Property_id</th>
                   <th>CreateTime</th>
+                  <!-- <th>OnlineStatus</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -189,6 +190,13 @@ AUTHORIZING
                     { "data" : "fields.serial_number" },
                     { "data" : "fields.property_id" },
                     { "data" : "fields.created_at" },
+                    // { mRender: function (data, type, row) {
+                    //     if (row["online_status"] == false) {
+                    //         return 'OFFLINE';
+                    //     } else {
+                    //         return 'ONLINE';
+                    //     }
+                    // }}
                 ]
         } );
     } );
@@ -196,6 +204,7 @@ AUTHORIZING
       var data = $("#example").DataTable().row(this).data();
       console.log(data);
       rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+      url = "https://" + data["fields"]["address"] + ":" + data["fields"]["port"]
       //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
       //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
         $.ajax({
@@ -203,6 +212,7 @@ AUTHORIZING
             url: "start-video",
             data: {
                 streamUrl: rtsp,
+                camurl : url
             },
             dataType: 'json',
             success: function (data) {
@@ -213,6 +223,13 @@ AUTHORIZING
         });
       $("#videoContainer").show();
     });
+    
+
+    // function getOnlineStatus() {
+    //     $.get("getOnlineState", function())
+    // }
+    // getOnlineStatus();
+    
     function onCreate() {
       prename = $("#createName").val();
       preaddress = $("#createAddress").val();

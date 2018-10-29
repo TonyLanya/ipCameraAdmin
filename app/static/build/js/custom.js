@@ -7,7 +7,7 @@
  * });
  */
 
-var interval = 1000;  // 1000 = 1 second, 3000 = 3 seconds
+var interval = 100000;  // 1000 = 1 second, 3000 = 3 seconds
 function doAjax() {
     $.ajax({
             type: 'GET',
@@ -41,10 +41,14 @@ function authorize() {
         dataType: 'json',
         success: function (data) {
             $("#auth_res").text(data["status"]);
+            if (data["status"] == "AUTHORIZED") {
+                flag_auth = 0;
+            }
             console.log(data);
         },
         complete: function() {
             if( flag_auth == 1 ) {
+                //setTimeout(authorize, 2000);
                 authorize();
             }
         }
