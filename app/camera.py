@@ -64,7 +64,7 @@ def video_feed(request):
         rtsp = request.GET.get('streamUrl')
         ### amazon
         ### rtsp
-        return StreamingHttpResponse(gen(VideoCamera("/home/out/development/gentelella/app/static/images/test.MP4")),content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(VideoCamera(rtsp)),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")
 
@@ -154,16 +154,16 @@ def threaded_authorize(rtsp_url, serial):
         return
     ### amazon
     ### /home/ubuntu/ipCameraAdmin/app/static/openface/shape_predictor_68_face_landmarks.dat
-    align = openface.AlignDlib("/home/out/development/gentelella/app/static/openface/shape_predictor_68_face_landmarks.dat")
+    align = openface.AlignDlib("/home/ubuntu/ipCameraAdmin/app/static/openface/shape_predictor_68_face_landmarks.dat")
     ### amazon
     ### /home/ubuntu/ipCameraAdmin/app/static/openface/nn4.small2.v1.t7
-    net = openface.TorchNeuralNet("/home/out/development/gentelella/app/static/openface/nn4.small2.v1.t7", 96)
+    net = openface.TorchNeuralNet("/home/ubuntu/ipCameraAdmin/app/static/openface/nn4.small2.v1.t7", 96)
     ### amazon
     ### /home/ubuntu/ipCameraAdmin/app/static/images/patroleum.jpg
-    bgrImg = cv2.imread("/home/out/development/gentelella/app/static/images/tony-1.png")
+    bgrImg = cv2.imread("/home/ubuntu/ipCameraAdmin/app/static/images/patroleum.jpg")
     ### amazon
     ### rtsp
-    video = cv2.VideoCapture("/home/out/development/gentelella/app/static/images/test.MP4")
+    video = cv2.VideoCapture(rtsp)
     success, realImg = video.read()
     source = getRep(align, net, bgrImg, 96)
     if isinstance(source, str):
