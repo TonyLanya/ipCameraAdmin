@@ -162,8 +162,8 @@ def threaded_authorize(rtsp_url, serial):
     ### /home/ubuntu/ipCameraAdmin/app/static/images/patroleum.jpg
     bgrImg = cv2.imread("/home/ubuntu/ipCameraAdmin/app/static/images/patroleum.jpg")
     ### amazon
-    ### rtsp
-    video = cv2.VideoCapture(rtsp)
+    ### rtsp_url
+    video = cv2.VideoCapture(rtsp_url)
     success, realImg = video.read()
     source = getRep(align, net, bgrImg, 96)
     if isinstance(source, str):
