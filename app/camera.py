@@ -162,7 +162,7 @@ def threaded_authorize(rtsp_url, serial):
     ### /home/ubuntu/ipCameraAdmin/app/static/images/patroleum.jpg
     bgrImg = cv2.imread("/home/out/development/gentelella/app/static/images/tony-1.png")
     ### amazon
-    ### rtsp
+    ### rtsp_url
     video = cv2.VideoCapture("/home/out/development/gentelella/app/static/images/test.MP4")
     success, realImg = video.read()
     source = getRep(align, net, bgrImg, 96)
