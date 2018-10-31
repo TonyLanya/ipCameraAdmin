@@ -149,20 +149,23 @@ AUTHORIZING
     $(document).ready(function() {
     });
 
+    var serial;
+
     function stop_cam() {
         $.ajax({
             type: 'POST',
             url: "stop-record",
             data: {
+                serial : serial
             },
             dataType: 'json',
             success: function (data) {
                 console.log(data);
+                location.reload();
             }
         });
         $("#mainVideo").empty();
         $("#videoContainer").hide();
-        location.reload();
         flag_auth = 0;
     }
 
@@ -201,28 +204,60 @@ AUTHORIZING
         } );
     } );
     $('#example tbody').on('click', 'tr', function() {
-      var data = $("#example").DataTable().row(this).data();
-      console.log(data);
-      rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
-      url = "https://" + data["fields"]["address"] + ":" + data["fields"]["port"]
-      //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
-      //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
+        var data = $("#example").DataTable().row(this).data();
+        console.log(data);
+        rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+        url = "https://" + data["fields"]["address"] + ":" + data["fields"]["port"];
+        high = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
+        serial = data["fields"]["serial_number"];
+        //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
+        //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
         $.ajax({
             type: 'POST',
             url: "start-video",
             data: {
                 streamUrl: rtsp,
-                camurl : url
+                camurl : url,
+                serial : serial,
+                high : high
             },
             dataType: 'json',
             success: function (data) {
-                $("#mainVideo").html("<img src=\"/video_feed\" class=\"main-video\">");
+                $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
                 flag_auth = 1;
                 authorize();
             }
         });
-      $("#videoContainer").show();
+        $("#videoContainer").show();
     });
+
+    var flag_auth = 0;
+    function authorize() {
+        console.log("authorize");
+        $.ajax({
+            type: 'GET',
+            url: "cam-authorize",
+            data: {
+                serial : serial
+            },
+            dataType: 'json',
+            success: function (data) {
+                if ( flag_auth == 1) {
+                    $("#auth_res").text(data["status"]);
+                }
+                if (data["status"] == "AUTHORIZED") {
+                    flag_auth = 0;
+                }
+                console.log(data);
+            },
+            complete: function() {
+                if( flag_auth == 1 ) {
+                    //setTimeout(authorize, 2000);
+                    authorize();
+                }
+            }
+        });
+    }
     
 
     // function getOnlineStatus() {

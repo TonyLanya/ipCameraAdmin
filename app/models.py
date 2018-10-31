@@ -20,6 +20,7 @@ class Cameras(models.Model):
     online_status = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
+    auth_state = models.CharField(max_length=50, default="AUTHORIZING")
 
     def publish(self):
         self.published_date = timezone.now()

@@ -22,6 +22,7 @@ urlpatterns = [
 
     url(r'video_feed', camera.video_feed, name='video_feed'),
     url(r'^start-video', camera.start_video),
+    url(r'^stop-record', camera.stop_record),
 
     url(r'^server-side', views.cameras_asJson, name='my_ajax_url'),
     url(r'^get_user_table', views.users_asJson, name='get_user_table'),
@@ -30,13 +31,9 @@ urlpatterns = [
     url(r'^email-receiver', views.email_receiver),
     url(r'^get-notify', views.get_notify),
     url(r'^camera/create-new', camera.create_new),
-    url(r'^camera/view-camera', camera.view_camera),
     url(r'^user/create-new', user.create_new),
     url(r'^property/create-new', properties.create_new),
     url(r'^agent/create-new', agents.create_new),
-    url(r'^get-record', camera.get_record),
-    url(r'^start-record', camera.start_record),
-    url(r'^stop-record', camera.stop_record),
     url(r'^get-camera', camera.get_camera),
     url(r'^remove-notis', views.remove_notis),
     url(r'^cam-authorize', camera.cam_authorize)

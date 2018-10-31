@@ -32,29 +32,6 @@ function doAjax() {
 }
 setTimeout(doAjax, interval);
 
-var flag_auth = 0;
-function authorize() {
-    console.log("authorize");
-    $.ajax({
-        type: 'GET',
-        url: "cam-authorize",
-        dataType: 'json',
-        success: function (data) {
-            $("#auth_res").text(data["status"]);
-            if (data["status"] == "AUTHORIZED") {
-                flag_auth = 0;
-            }
-            console.log(data);
-        },
-        complete: function() {
-            if( flag_auth == 1 ) {
-                //setTimeout(authorize, 2000);
-                authorize();
-            }
-        }
-    });
-}
-
 var noti = document.getElementById("show-noti");
 var close = document.getElementsByClassName("close")[0];
 
