@@ -55,16 +55,17 @@ def gen(camera):
         if frame != None:
             yield(b'--frame\r\n'
             b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-            #time.sleep(1)
+            time.sleep(5)
 
 @gzip.gzip_page
 @csrf_exempt
 def video_feed(request):
     try:
         rtsp = request.GET.get('streamUrl')
+        rtsp = rtsp + "&subtype=1"
         ### amazon
         ### rtsp
-        return StreamingHttpResponse(gen(VideoCamera(rtsp)),content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(VideoCamera("rtsp://admin:patrol88@166.241.170.18:1111/cam/playback?channel=1&starttime=2018_11_01_02_40_00&endtime=2018_11_01_02_41_59")),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")
 
@@ -233,9 +234,9 @@ def start_video(request):
     cam_url = request.POST.get('camurl')
     serial = request.POST.get('serial')
 
-    thread = Thread(target = threaded_main, args = (high_url, serial,))
+    #thread = Thread(target = threaded_main, args = (high_url, serial,))
     flag_auth = 1
-    thread.start()
+    #thread.start()
     return HttpResponse(json.dumps({'status' : 'success'}), content_type="application/json")
 
 @csrf_exempt

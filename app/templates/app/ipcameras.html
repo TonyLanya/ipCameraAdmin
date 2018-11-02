@@ -130,6 +130,7 @@ AUTHORIZING
                   <th>Serial_number</th>
                   <th>Property_id</th>
                   <th>CreateTime</th>
+                  <th>Action</th>
                   <!-- <th>OnlineStatus</th> -->
                 </tr>
             </thead>
@@ -194,6 +195,9 @@ AUTHORIZING
                     { "data" : "fields.property_id" },
                     { "data" : "fields.created_at" },
                     // { mRender: function (data, type, row) {
+                    //     return '<a class="btn btn-outline-info " onclick="onEdit(\''+ row["serial_number"] +'\')" data-toggle="modal" data-target="#editCamera"><i class="fas fa-edit "></i></a><a class="btn btn-outline-danger" onclick="onDelete(\''+ row["serial_number"] +'\')"><i class="fas fa-trash-alt "></i></a>';
+                    // }}
+                    // { mRender: function (data, type, row) {
                     //     if (row["online_status"] == false) {
                     //         return 'OFFLINE';
                     //     } else {
@@ -210,6 +214,7 @@ AUTHORIZING
         url = "https://" + data["fields"]["address"] + ":" + data["fields"]["port"];
         high = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
         serial = data["fields"]["serial_number"];
+        rtsp = "rtsp://admin:patrol88@166.241.170.18:1111/cam/playback?channel=1&starttime=2018_11_01_02_40_00&endtime=2018_11_01_02_41_59";
         //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
         //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
         $.ajax({
