@@ -109,7 +109,7 @@ def email_receiver(request):
     serial = get_serial(re.sub(r"\s+", " ", new_email.content))
     new_email.serial = serial
     cam = Cameras.objects.filter(serial_number=serial)
-    if (cam[0].auth_user != ''):
+    if (cam[0].auth_user != None):
         new_email.notify = True
     new_email.save()
     return HttpResponse("ok")
