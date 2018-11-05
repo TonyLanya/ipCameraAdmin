@@ -11,24 +11,10 @@
 <div class="video-container" id="videoContainer">
 <!-- <video id="shaka" class="player" autoplay></video> -->
 <!-- <canvas id="ipCamera" class="canvas"></canvas> -->
-<div id="auth_res" style="    position: absolute;
-left: calc(50% - 350px);
-top: calc(50% - 395px);
-z-index: 1000;
-width: 704px;
-height: 155px;
-background-color: green;
-color: white;
-text-align: center;
-font-size: 70px;
-line-height: 155px;
-font-weight: bold;">
-AUTHORIZING
-</div>
 <div id="mainVideo">
     
 </div>
-<button onclick="stop_cam();" style="width: 200px;position: absolute;left: calc(50% - 100px);top: calc(50% + 240px);">
+<button onclick="stop_cam();" class="end-cam">
     End Camera
 </button>
 </div>
@@ -54,57 +40,45 @@ AUTHORIZING
               </div>
               <div class="modal-body">
                   <div class="form-group row">
-                      <label for="editName" class="col-sm-3 text-right control-label col-form-label">Name : </label>
+                      <label for="createName" class="col-sm-3 text-right control-label col-form-label">Name : </label>
                       <div class="col-sm-9">
                           <input id="createName" type="text" class="form-control" placeholder="Camera Name">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editAddress" class="col-sm-3 text-right control-label col-form-label">Address : </label>
+                      <label for="createAddress" class="col-sm-3 text-right control-label col-form-label">Address : </label>
                       <div class="col-sm-9">
                           <input id="createAddress" type="email" class="form-control" placeholder="Camera Address">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editPort" class="col-sm-3 text-right control-label col-form-label">Port : </label>
+                      <label for="createPort" class="col-sm-3 text-right control-label col-form-label">Port : </label>
                       <div class="col-sm-9">
                           <input id="createPort" type="text" class="form-control" placeholder="Camera Port Number">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editVStream" class="col-sm-3 text-right control-label col-form-label">VideoStream : </label>
-                      <div class="col-sm-9">
-                          <input id="createVStream" type="text" class="form-control" placeholder="Video Stream Name">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editDStream" class="col-sm-3 text-right control-label col-form-label">DataStream : </label>
-                      <div class="col-sm-9">
-                          <input id="createDStream" type="text" class="form-control" placeholder="Data Stream Name">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="editLogin" class="col-sm-3 text-right control-label col-form-label">Account : </label>
+                      <label for="createLogin" class="col-sm-3 text-right control-label col-form-label">Account : </label>
                       <div class="col-sm-9">
                           <input id="createLogin" type="text" class="form-control" placeholder="Camera Account">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editPassword" class="col-sm-3 text-right control-label col-form-label">Password : </label>
+                      <label for="createPassword" class="col-sm-3 text-right control-label col-form-label">Password : </label>
                       <div class="col-sm-9">
                           <input id="createPassword" type="password" class="form-control" placeholder="Camera password">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editSerialNumber" class="col-sm-3 text-right control-label col-form-label">Serial_number : </label>
+                      <label for="createSerialNumber" class="col-sm-3 text-right control-label col-form-label">Serial_number : </label>
                       <div class="col-sm-9">
                           <input id="createSerialNumber" type="text" class="form-control" placeholder="Camera Serial Number">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editPropertyId" class="col-sm-3 text-right control-label col-form-label">Property_id : </label>
+                      <label for="propertyOptions" class="col-sm-3 text-right control-label col-form-label">Property_id : </label>
                       <div class="col-sm-9">
-                          <input id="createPropertyId" type="text" class="form-control" placeholder="Property Id">
+                        <select id="propertyOptions" name="character"></select>
                       </div>
                   </div>
               </div>
@@ -115,6 +89,66 @@ AUTHORIZING
 
       </div>
   </div>
+  <div id="editCamera" class="modal" role="dialog">
+        <div class="modal-dialog modal-primary money_detail">
+    
+          <!-- Modal content-->
+          <input type="hidden" id="editCamid">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Camera</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                    <div class="form-group row">
+                        <label for="editName" class="col-sm-3 text-right control-label col-form-label">Name : </label>
+                        <div class="col-sm-9">
+                            <input id="editName" type="text" class="form-control" placeholder="Camera Name">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="editAddress" class="col-sm-3 text-right control-label col-form-label">Address : </label>
+                        <div class="col-sm-9">
+                            <input id="editAddress" type="email" class="form-control" placeholder="Camera Address">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="editPort" class="col-sm-3 text-right control-label col-form-label">Port : </label>
+                        <div class="col-sm-9">
+                            <input id="editPort" type="text" class="form-control" placeholder="Camera Port Number">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="editLogin" class="col-sm-3 text-right control-label col-form-label">Account : </label>
+                        <div class="col-sm-9">
+                            <input id="editLogin" type="text" class="form-control" placeholder="Camera Account">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="editPassword" class="col-sm-3 text-right control-label col-form-label">Password : </label>
+                        <div class="col-sm-9">
+                            <input id="editPassword" type="password" class="form-control" placeholder="Camera password">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="editSerialNumber" class="col-sm-3 text-right control-label col-form-label">Serial_number : </label>
+                        <div class="col-sm-9">
+                            <input id="editSerialNumber" type="text" class="form-control" placeholder="Camera Serial Number">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="editProperty" class="col-sm-3 text-right control-label col-form-label">Property_id : </label>
+                        <div class="col-sm-9">
+                            <select id="editProperty" name="character"></select>
+                        </div>
+                    </div>
+                </div>
+            <div class="modal-footer">
+              <button type="button" onclick="onSubmitEdit()" class="btn btn-success">save</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="clearfix"></div>
 
     <div class="row">
@@ -125,11 +159,10 @@ AUTHORIZING
                   <th>Name</th>
                   <th>Address</th>
                   <th>Port</th>
-                  <th>Stream Name</th>
-                  <th>Data Stream Name</th>
                   <th>Serial_number</th>
                   <th>Property_id</th>
                   <th>CreateTime</th>
+                  <th>Action</th>
                   <!-- <th>OnlineStatus</th> -->
                 </tr>
             </thead>
@@ -146,8 +179,96 @@ AUTHORIZING
   {{ block.super }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/2.4.1/shaka-player.compiled.js"></script>
   <script type="text/javascript" language="javascript" class="init">
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
     $(document).ready(function() {
+        $.ajax({
+            /* the route pointing to the post function */
+            url: '/user/get-properties',
+            type: 'POST',
+            /* send the csrf-token and the input to the controller */
+            data: {
+            },
+            dataType: 'JSON',
+            /* remind that 'data' is the response of the AjaxController */
+            success: function (data) {
+                data.forEach(element => {
+                    console.log(element);
+                    proSelect = document.getElementById('propertyOptions');
+                    proSelect.options[proSelect.options.length] = new Option(element["fields"]["address"], element["pk"]);
+                    editSelect = document.getElementById('editProperty');
+                    editSelect.options[editSelect.options.length] = new Option(element["fields"]["address"], element["pk"]);
+                });
+            }
+        });
     });
+
+    function edit(id) {
+        $.ajax({
+            /* the route pointing to the post function */
+            url: '/camera/get-cam',
+            type: 'POST',
+            /* send the csrf-token and the input to the controller */
+            data: {
+                id: id
+            },
+            dataType: 'JSON',
+            /* remind that 'data' is the response of the AjaxController */
+            success: function (data) {
+                $("#editCamid").val(data[0]["pk"]);
+                $("#editName").val(data[0]["fields"]["name"]);
+                $("#editAddress").val(data[0]["fields"]["address"]);
+                $("#editPort").val(data[0]["fields"]["port"]);
+                $("#editLogin").val(data[0]["fields"]["login"]);
+                $("#editPassword").val(data[0]["fields"]["password"]);
+                $("#editSerialNumber").val(data[0]["fields"]["serial_number"]);
+                $("#editProperty").val(data[0]["fields"]["property_id"]);
+            }
+        });
+    }
+
+    function onSubmitEdit() {
+        id = $("#editCamid").val();
+        name = $("#editName").val();
+        address = $("#editAddress").val();
+        port = $("#editPort").val();
+        login = $("#editLogin").val();
+        password = $("#editPassword").val();
+        serial = $("#editSerialNumber").val();
+        prop = $("#editProperty").val();
+        $.ajax({
+            /* the route pointing to the post function */
+            url: '/camera/update',
+            type: 'POST',
+            /* send the csrf-token and the input to the controller */
+            data: {
+                id: id,
+                name: name,
+                address: address,
+                port : port,
+                login : login,
+                password : password,
+                serial : serial,
+                prop : prop
+            },
+            dataType: 'JSON',
+            /* remind that 'data' is the response of the AjaxController */
+            success: function (data) {
+            console.log(data);
+            if ( data.status == "failed" ) {
+                alert(data.msg);
+            } else {
+                alert(data.status);
+                location.reload();
+            }
+            }
+        });
+    }
 
     var serial;
 
@@ -177,11 +298,15 @@ AUTHORIZING
     }
 
     $(document).ready(function() {
+        prop_id = getUrlParameter("prop_id");
         $('#example').dataTable( {
             "processing": true,
             "ajax": {
                 "processing": true,
                 "url": "{% url 'my_ajax_url' %}",
+                "data": {
+                    "prop_id" : prop_id
+                },
                 "dataSrc": ""
             },
 
@@ -189,11 +314,12 @@ AUTHORIZING
                     { "data" : "fields.name" },
                     { "data" : "fields.address" },
                     { "data" : "fields.port" },
-                    { "data" : "fields.video_stream"},
-                    { "data" : "fields.data_stream"},
                     { "data" : "fields.serial_number" },
                     { "data" : "fields.property_id" },
                     { "data" : "fields.created_at" },
+                    { mRender: function (data, type, row) {
+                        return '<button onclick="edit(\'' + row["pk"] +'\')" data-toggle="modal" data-target="#editCamera">Edit</button>' + '<button onclick="view(\'' + row["pk"] +'\')">View</button>' + '<button onclick="remove(\'' + row["fields"]["serial_number"] +'\')">Remove</button>';
+                    }}
                     // { mRender: function (data, type, row) {
                     //     if (row["online_status"] == false) {
                     //         return 'OFFLINE';
@@ -204,56 +330,21 @@ AUTHORIZING
                 ]
         } );
     } );
-    $('#example tbody').on('click', 'tr', function() {
-        var data = $("#example").DataTable().row(this).data();
-        rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
-        url = "https://" + data["fields"]["address"] + ":" + data["fields"]["port"];
-        high = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
-        serial = data["fields"]["serial_number"];
-        //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
-        //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
+
+    function remove(serial) {
         $.ajax({
             type: 'POST',
-            url: "start-video",
-            data: {
-                streamUrl: rtsp,
-                camurl : url,
-                serial : serial,
-                high : high
-            },
-            dataType: 'json',
-            success: function (data) {
-                $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
-                flag_auth = 1;
-                authorize();
-            }
-        });
-        $("#videoContainer").show();
-    });
-
-    var flag_auth = 0;
-    function authorize() {
-        console.log("authorize");
-        $.ajax({
-            type: 'GET',
-            url: "cam-authorize",
+            url: "/camera/remove-cam",
             data: {
                 serial : serial
             },
             dataType: 'json',
             success: function (data) {
-                if ( flag_auth == 1) {
-                    $("#auth_res").text(data["status"]);
-                }
-                if (data["status"] == "AUTHORIZED") {
-                    flag_auth = 0;
-                }
-                console.log(data);
-            },
-            complete: function() {
-                if( flag_auth == 1 ) {
-                    //setTimeout(authorize, 2000);
-                    authorize();
+                if (data.status == "failed") {
+                    alert("Failed");
+                } else {
+                    alert("Success");
+                    location.reload();
                 }
             }
         });
@@ -307,6 +398,26 @@ AUTHORIZING
           }
         }
       });
+    }
+
+    function view(id) {
+        $.ajax({
+            type: 'POST',
+            url: 'camera/view-camera',
+            dataType: 'json',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                console.log(data);
+                rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
+                url = "https://" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"];
+                high = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
+                serial = data[0]["fields"]["serial_number"];
+                $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
+                $("#videoContainer").show();
+            }
+        });
     }
   </script>
 {% endblock javascripts %}

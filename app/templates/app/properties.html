@@ -37,39 +37,45 @@
               </div>
               <div class="modal-body">
                   <div class="form-group row">
-                      <label for="editAddress" class="col-sm-3 text-right control-label col-form-label">Address : </label>
+                      <label for="createAddress" class="col-sm-3 text-right control-label col-form-label">Address : </label>
                       <div class="col-sm-9">
                           <input id="createAddress" type="text" class="form-control" placeholder="Adress">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editCity" class="col-sm-3 text-right control-label col-form-label">City : </label>
+                      <label for="createCity" class="col-sm-3 text-right control-label col-form-label">City : </label>
                       <div class="col-sm-9">
                           <input id="createCity" type="text" class="form-control" placeholder="City">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editState" class="col-sm-3 text-right control-label col-form-label">State : </label>
+                      <label for="createState" class="col-sm-3 text-right control-label col-form-label">State : </label>
                       <div class="col-sm-9">
                           <input id="createState" type="text" class="form-control" placeholder="State">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editZipcode" class="col-sm-3 text-right control-label col-form-label">ZipCode : </label>
+                      <label for="createZipcode" class="col-sm-3 text-right control-label col-form-label">ZipCode : </label>
                       <div class="col-sm-9">
                           <input id="createZipcode" type="text" class="form-control" placeholder="ZipCode">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editCountry" class="col-sm-3 text-right control-label col-form-label">Country : </label>
+                      <label for="createCountry" class="col-sm-3 text-right control-label col-form-label">Country : </label>
                       <div class="col-sm-9">
                           <input id="createCountry" type="text" class="form-control" placeholder="Country">
                       </div>
                   </div>
                   <div class="form-group row">
-                      <label for="editPhoneno" class="col-sm-3 text-right control-label col-form-label">Phone Number : </label>
+                      <label for="createPhoneno" class="col-sm-3 text-right control-label col-form-label">Phone Number : </label>
                       <div class="col-sm-9">
                           <input id="createPhoneno" type="text" class="form-control" placeholder="Phone Number">
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="createPolice" class="col-sm-3 text-right control-label col-form-label">Police : </label>
+                      <div class="col-sm-9">
+                          <input id="createPolice" type="text" class="form-control" placeholder="Police">
                       </div>
                   </div>
               </div>
@@ -80,6 +86,66 @@
 
       </div>
   </div>
+  <div id="editProperty" class="modal" role="dialog">
+        <div class="modal-dialog modal-primary money_detail">
+    
+          <!-- Modal content-->
+          <input type="hidden" id="eidtPropertyid">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Property</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group row">
+                <label for="editAddress" class="col-sm-3 text-right control-label col-form-label">Address : </label>
+                <div class="col-sm-9">
+                  <input id="editAddress" type="text" class="form-control" placeholder="Address">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="editCity" class="col-sm-3 text-right control-label col-form-label">City : </label>
+                <div class="col-sm-9">
+                  <input id="editCity" type="text" class="form-control" placeholder="City">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="editState" class="col-sm-3 text-right control-label col-form-label">State : </label>
+                <div class="col-sm-9">
+                  <input id="editState" type="text" class="form-control" placeholder="State">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="editZipcode" class="col-sm-3 text-right control-label col-form-label">ZipCode : </label>
+                <div class="col-sm-9">
+                  <input id="editZipcode" type="text" class="form-control" placeholder="ZipCode">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="editCountry" class="col-sm-3 text-right control-label col-form-label">Country : </label>
+                <div class="col-sm-9">
+                  <input id="editCountry" type="text" class="form-control" placeholder="Country">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="editPhoneno" class="col-sm-3 text-right control-label col-form-label">PhoneNo : </label>
+                <div class="col-sm-9">
+                  <input id="editPhoneno" type="text" class="form-control" placeholder="PhoneNo">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="editPolice" class="col-sm-3 text-right control-label col-form-label">Police : </label>
+                <div class="col-sm-9">
+                  <input id="editPolice" type="text" class="form-control" placeholder="Police">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" onclick="onSubmitEdit()" class="btn btn-success">save</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="clearfix"></div>
 
     <div class="row">
@@ -93,6 +159,8 @@
                   <th>Zipcode</th>
                   <th>Country</th>
                   <th>PhoneNo</th>
+                  <th>Police</th>
+                  <th>Actions</th>
                   <th>Created_at</th>
                 </tr>
             </thead>
@@ -126,14 +194,18 @@
                     { "data" : "fields.zipcode" },
                     { "data" : "fields.country" },
                     { "data" : "fields.phoneno" },
+                    { "data" : "fields.police" },
+                    { mRender: function (data, type, row) {
+                        return '<button onclick="edit(\'' + row["pk"] +'\')" data-toggle="modal" data-target="#editProperty">Edit</button>' + '<button onclick="remove(\'' + row["pk"] +'\')">Remove</button>';
+                    }},
                     { "data" : "fields.created_at" }
                 ]
         } );
     } );
-    $('#example tbody').on('click', 'tr', function() {
-      var data = $("#example").DataTable().row(this).data();
-      alert('you clicked on ' + data["fields"]['address'] + '\'s row');
-    });
+    // $('#example tbody').on('click', 'tr', function() {
+    //   var data = $("#example").DataTable().row(this).data();
+    //   alert('you clicked on ' + data["fields"]['address'] + '\'s row');
+    // });
     function onCreate() {
       preAddress = $("#createAddress").val();
       preCity = $("#createCity").val();
@@ -141,6 +213,7 @@
       preZipcode = $('#createZipcode').val();
       preCountry = $('#createCountry').val();
       prePhoneno = $("#createPhoneno").val();
+      prePolice = $("#createPolice").val();
       if (preAddress == '') {
         alert("Please insert Address");
         return;
@@ -157,7 +230,8 @@
             state: preState,
             zipcode: preZipcode,
             country: preCountry,
-            phoneno: prePhoneno
+            phoneno: prePhoneno,
+            police: prePolice
         },
         dataType: 'JSON',
         /* remind that 'data' is the response of the AjaxController */
@@ -171,6 +245,86 @@
           }
         }
       });
+    }
+
+    function edit(id) {
+        $.ajax({
+            /* the route pointing to the post function */
+            url: '/property/get-property',
+            type: 'POST',
+            /* send the csrf-token and the input to the controller */
+            data: {
+                id: id
+            },
+            dataType: 'JSON',
+            /* remind that 'data' is the response of the AjaxController */
+            success: function (data) {
+                $("#eidtPropertyid").val(id);
+                $("#editAddress").val(data[0]["fields"]["address"]);
+                $("#editCity").val(data[0]["fields"]["city"]);
+                $("#editState").val(data[0]["fields"]["state"]);
+                $('#editZipcode').val(data[0]["fields"]["zipcode"]);
+                $('#editCountry').val(data[0]["fields"]["country"]);
+                $("#editPhoneno").val(data[0]["fields"]["phoneno"]);
+                $("#editPolice").val(data[0]["fields"]["police"]);
+            }
+        });
+    }
+
+    function onSubmitEdit() {
+        id = $("#eidtPropertyid").val();
+        preAddress = $("#editAddress").val();
+        preCity = $("#editCity").val();
+        preState = $("#editState").val();
+        preZipcode = $('#editZipcode').val();
+        preCountry = $('#editCountry').val();
+        prePhoneno = $("#editPhoneno").val();
+        prePolice = $("#editPolice").val();
+        $.ajax({
+            /* the route pointing to the post function */
+            url: '/property/update',
+            type: 'POST',
+            /* send the csrf-token and the input to the controller */
+            data: {
+                id : id,
+                address : preAddress,
+                city : preCity,
+                state : preState,
+                zipcode : preZipcode,
+                country : preCountry,
+                phoneno : prePhoneno,
+                police : prePolice
+            },
+            dataType: 'JSON',
+            /* remind that 'data' is the response of the AjaxController */
+            success: function (data) {
+                if ( data.status == "failed" ) {
+                    alert(data.msg);
+                } else {
+                    alert(data.status);
+                    location.reload();
+                }
+            }
+        });
+    }
+
+    function remove(id) {
+        $.ajax({
+            type: 'POST',
+            url: "/property/remove",
+            data: {
+                id : id
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == "failed") {
+                    alert(data.msg);
+                } else {
+                    alert("Success");
+                    location.reload();
+                }
+            }
+        });
     }
   </script>
 {% endblock javascripts %}

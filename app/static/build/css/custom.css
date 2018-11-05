@@ -5,6 +5,117 @@ html , body{
 
 }
 
+#new_alert {
+    display: inline-block;
+    margin: 0px auto;
+    position: fixed;
+    transition: all 3.5s ease-in-out 2s;
+    -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+       -moz-animation: fadein 1s; /* Firefox < 16 */
+        -ms-animation: fadein 1s; /* Internet Explorer */
+         -o-animation: fadein 1s; /* Opera < 12.1 */
+            animation: fadein 1s;
+    z-index: 1031;
+    bottom: 20px;
+    right: 20px;
+    animation-iteration-count: 1;
+    width: 200px;
+    height: 200px;
+    background-color: #A2A2A2;
+    display: none;
+}
+
+.title {
+    height: 20px;
+    background-color: red;
+    color: white;
+    text-align: center;
+}
+
+.alert-vid {
+    background-color: #1ABB9C;
+    color: #FFFFFF;
+    height: 160px;
+    text-align: center;
+}
+
+.actions {
+    height: 20px;
+}
+
+.actions .button {
+    height: 20px;
+    padding: 0px;
+    margin: 0px;
+    color: #FFFFFF;
+    display: inline-block;
+    -webkit-border-radius: 10px;
+    border: 0px solid #ffffff;
+}
+
+.button.Accept {
+    width: 100%;
+    -webkit-animation: glowing 1500ms infinite;
+    -moz-animation: glowing 1500ms infinite;
+    -o-animation: glowing 1500ms infinite;
+    animation: glowing 1500ms infinite;
+}
+
+@-webkit-keyframes glowing {
+    0% { background-color: #97bf2d; -webkit-box-shadow: 0 0 3px #97bf2d; }
+    50% { background-color: #97bf2d; -webkit-box-shadow: 0 0 40px #97bf2d; }
+    100% { background-color: #97bf2d; -webkit-box-shadow: 0 0 3px #97bf2d; }
+}
+
+@-moz-keyframes glowing {
+0% { background-color: #97bf2d; -moz-box-shadow: 0 0 3px #97bf2d; }
+50% { background-color: #97bf2d; -moz-box-shadow: 0 0 40px #97bf2d; }
+100% { background-color: #97bf2d; -moz-box-shadow: 0 0 3px #97bf2d; }
+}
+
+@-o-keyframes glowing {
+0% { background-color: #97bf2d; box-shadow: 0 0 3px #97bf2d; }
+50% { background-color: #97bf2d; box-shadow: 0 0 40px #97bf2d; }
+100% { background-color: #97bf2d; box-shadow: 0 0 3px #97bf2d; }
+}
+
+@keyframes glowing {
+0% { background-color: #97bf2d; box-shadow: 0 0 3px #97bf2d; }
+50% { background-color: #97bf2d; box-shadow: 0 0 40px #97bf2d; }
+100% { background-color: #97bf2d; box-shadow: 0 0 3px #97bf2d; }
+}
+
+.button.Decline {
+    width: 97px;
+    background-color: #D82520;
+}
+
+#auth_res {
+    position: absolute;
+    left: calc(50% - 570px);
+    top: calc(50% - 395px);
+    z-index: 1000;
+    width: 704px;
+    height: 155px;
+    color: white;
+    text-align: center;
+    font-size: 70px;
+    line-height: 155px;
+    font-weight: bold;
+}
+
+.auth_res {
+    background-color: blue;
+}
+
+.auth_res.auth_suc {
+    background-color: green !important;
+}
+
+.auth_res.auth_fail {
+    background-color: red;
+}
+
 .btn-login {
     width: 100%;
     margin-left: 0 !important;
@@ -20,9 +131,22 @@ html , body{
     z-index: 9;
 }
 
+.end-cam {
+    width: 200px;
+    position: absolute;
+    left: calc(50% - 310px);
+    /* left: 240px; */
+    top: calc(50% + 240px);
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    background-color: red;
+    border: 0px solid white;
+}
+
 .player {
     position: absolute;
-    left: calc(50% - 350px);
+    /* left: calc(50% - 350px); */
     top: calc(50% - 240px);
     z-index: 999;
     width: 704px;
@@ -32,7 +156,17 @@ html , body{
 .main-video,
 .canvas {
     position: absolute;
-    left: calc(50% - 350px);
+    /* left: calc(50% - 350px); */
+    top: calc(50% - 240px);
+    z-index: 1000;
+    width: 704px;
+    height: 480px;
+}
+
+#mainVideo {
+    background-color: black;
+    position: absolute;
+    left: calc(50% - 570px);
     top: calc(50% - 240px);
     z-index: 1000;
     width: 704px;
@@ -4375,4 +4509,112 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 
 .dataTables_wrapper > .row{
   overflow:auto !important; /*prevent datatables overflowing its container*/
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.container-detail {
+    background-color: white;
+    width: 500px;
+    height: 635px;
+    left: 1100px;
+    position: absolute;
+    top: 75px;
+}
+
+.title.detailcam {
+    height: 30px;
+    line-height: 30px;
+    background-color: black;
+    color: white;
+}
+
+.container-detail .main-detail {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.item-title {
+    display: inline-block;
+    width: 200px;
+    text-align: right;
+}
+
+.item-content {
+    display: inline-block;
+    width: 200px;
+    text-align: left;
+    word-wrap: break-word;
+}
+
+.auth-items {
+    font-size: 20px;
+    color: black;
+}
+
+.button-success,
+.button-error,
+.button-warning,
+.button-secondary {
+    color: white;
+    border-radius: 4px;
+    padding: 10px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-success {
+    background: rgb(28, 184, 65); /* this is a green */
+}
+
+.button-error {
+    background: rgb(202, 60, 60); /* this is a maroon */
+}
+
+.button-warning {
+    background: rgb(223, 117, 20); /* this is an orange */
+}
+
+.button-secondary {
+    background: rgb(66, 184, 221); /* this is a light blue */
+}
+
+p.nReg {
+    background: red;
+    color : white;
+    width : 100px;
+    text-align: center;
+}
+
+p.pReg {
+    background: green;
+    color : white;
+    width : 100px;
+    text-align: center;
 }

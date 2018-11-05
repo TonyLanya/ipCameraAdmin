@@ -48,6 +48,12 @@
                           <input id="createPhoneno" type="email" class="form-control" placeholder="Phone Number">
                       </div>
                   </div>
+                  <div class="form-group row">
+                        <label for="propertyOptions" class="col-sm-3 text-right control-label col-form-label">Property : </label>
+                        <div class="col-sm-9">
+                            <select id="propertyOptions" name="character"></select>
+                        </div>
+                  </div>
               </div>
               <div class="modal-footer">
                   <button type="button" onclick="onCreate()" class="btn btn-success">Create</button>
@@ -56,6 +62,42 @@
 
       </div>
   </div>
+  <div id="editUser" class="modal" role="dialog">
+        <div class="modal-dialog modal-primary money_detail">
+    
+          <!-- Modal content-->
+          <input type="hidden" id="editUserid">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit User</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group row">
+                <label for="editName" class="col-sm-3 text-right control-label col-form-label">UserName : </label>
+                <div class="col-sm-9">
+                  <input id="editName" type="text" class="form-control" placeholder="Username">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="editPhoneno" class="col-sm-3 text-right control-label col-form-label">PhoneNo : </label>
+                <div class="col-sm-9">
+                  <input id="editPhoneno" type="text" class="form-control" placeholder="Phone No">
+                </div>
+              </div>
+              <div class="form-group row">
+                    <label for="editProperty" class="col-sm-3 text-right control-label col-form-label">Property : </label>
+                    <div class="col-sm-9">
+                        <select id="editProperty" name="character"></select>
+                    </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" onclick="onSubmitEdit()" class="btn btn-success">save</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="clearfix"></div>
 
     <div class="row">
@@ -65,6 +107,9 @@
                 <tr>
                   <th>Name</th>
                   <th>phoneno</th>
+                  <th>Actions</th>
+                  <th>Photo</th>
+                  <th>Status</th>
                   <th>CreateTime</th>
                 </tr>
             </thead>
@@ -94,17 +139,100 @@
             "columns": [
                     { "data" : "fields.name" },
                     { "data" : "fields.phoneno" },
-                    { "data" : "fields.created_at" },
+                    { mRender: function (data, type, row) {
+                        return '<button onclick="edit(\'' + row["pk"] +'\')" data-toggle="modal" data-target="#editUser">Edit</button>' + '<button onclick="remove(\'' + row["pk"] +'\')">Remove</button>';
+                    }},
+                    { mRender: function (data, type, row) {
+                        prop_id = row["fields"]["property_id"];
+                        return '<button onclick="changePhoto(\'' + prop_id +'\')">Change Photo</button>';
+                    }},
+                    { mRender: function (data, type, row) {
+                        if (row["fields"]["registered"]) {
+                            return '<p class="pReg">Registered<p>';
+                        } else {
+                            return '<p class="nReg" onclick="register(\'' + row["pk"]  + '\')">Not Registered<p>';
+                        }
+                    }},
+                    { "data" : "fields.created_at" }
                 ]
         } );
+        $.ajax({
+            /* the route pointing to the post function */
+            url: '/user/get-properties',
+            type: 'POST',
+            /* send the csrf-token and the input to the controller */
+            data: {
+            },
+            dataType: 'JSON',
+            /* remind that 'data' is the response of the AjaxController */
+            success: function (data) {
+                data.forEach(element => {
+                    proSelect = document.getElementById('propertyOptions');
+                    proSelect.options[proSelect.options.length] = new Option(element["fields"]["address"], element["pk"]);
+                    editSelect = document.getElementById('editProperty');
+                    editSelect.options[editSelect.options.length] = new Option(element["fields"]["address"], element["pk"]);
+                });
+            }
+        });
     } );
-    $('#example tbody').on('click', 'tr', function() {
-      var data = $("#example").DataTable().row(this).data();
-      alert('you clicked on ' + data["fields"]['name'] + '\'s row');
-    });
+    // $('#example tbody').on('click', 'tr', function() {
+    //   var data = $("#example").DataTable().row(this).data();
+    //   alert('you clicked on ' + data["fields"]['name'] + '\'s row');
+    // });
+
+    function edit(id) {
+        $.ajax({
+            /* the route pointing to the post function */
+            url: '/user/get-user',
+            type: 'POST',
+            /* send the csrf-token and the input to the controller */
+            data: {
+                id: id
+            },
+            dataType: 'JSON',
+            /* remind that 'data' is the response of the AjaxController */
+            success: function (data) {
+                $("#editName").val(data["name"]);
+                $("#editPhoneno").val(data["phoneno"]);
+                $("#editProperty").val(data["prop_id"]);
+                $("#editUserid").val(data["pk"]);
+            }
+        });
+    }
+
+    function onSubmitEdit() {
+        id = $("#editUserid").val();
+        prename = $("#editName").val();
+        prephoneno = $("#editPhoneno").val();
+        prepropid = $('#editProperty').val();
+        $.ajax({
+            /* the route pointing to the post function */
+            url: '/user/update',
+            type: 'POST',
+            /* send the csrf-token and the input to the controller */
+            data: {
+                id: id,
+                name: prename,
+                phoneno: prephoneno,
+                propid : prepropid
+            },
+            dataType: 'JSON',
+            /* remind that 'data' is the response of the AjaxController */
+            success: function (data) {
+            if ( data.status == "failed" ) {
+                alert(data.msg);
+            } else {
+                alert(data.status);
+                location.reload();
+            }
+            }
+        });
+    }
+
     function onCreate() {
       prename = $("#createName").val();
       prephoneno = $("#createPhoneno").val();
+      prepropid = $('#propertyOptions').val();
       if (prename == '') {
         alert("Please insert User Name");
         return;
@@ -117,11 +245,11 @@
         data: {
             name: prename,
             phoneno: prephoneno,
+            propid : prepropid
         },
         dataType: 'JSON',
         /* remind that 'data' is the response of the AjaxController */
         success: function (data) {
-          console.log(data);
           if ( data.status == "failed" ) {
               alert(data.msg);
           } else {
@@ -130,6 +258,48 @@
           }
         }
       });
+    }
+
+    function remove(id) {
+        $.ajax({
+            type: 'POST',
+            url: "/user/remove",
+            data: {
+                id : id
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == "failed") {
+                    alert("Failed");
+                } else {
+                    alert("Success");
+                    location.reload();
+                }
+            }
+        });
+    }
+
+    function changePhoto(prop_id) {
+        window.location.href = "/ipcameras?prop_id=" + prop_id
+    }
+
+    function register(id) {
+        $.ajax({
+            type: 'POST',
+            url: "/user/register",
+            data: {
+                id : id
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == "failed") {
+                    alert("Failed");
+                } else {
+                    alert("Success");
+                    location.reload();
+                }
+            }
+        });
     }
   </script>
 {% endblock javascripts %}
