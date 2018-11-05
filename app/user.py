@@ -7,6 +7,8 @@ import camera
 import numpy as np
 import os
 
+static_url = "/home/out/development/gentelella/app/static"
+
 @csrf_exempt
 def create_new(request):
     new_user = Users()
@@ -58,10 +60,8 @@ def update_user(request):
         user = Users.objects.get(pk=id)
         if user.registered == 1:
             if (user.name != name) or (user.property_id != propid) :
-                ### amazon
-                ### /home/ubuntu/ipCameraAdmin/app/static/images/
-                old_path = "/home/ubuntu/ipCameraAdmin/app/static/images/" + user.property_id + "/" + user.name + ".csv"
-                new_path = "/home/ubuntu/ipCameraAdmin/app/static/images/" + propid + "/" + name + ".csv"
+                old_path = static_url + "/images/" + user.property_id + "/" + user.name + ".csv"
+                new_path = static_url + "/images/" + propid + "/" + name + ".csv"
                 os.rename(old_path, new_path)
         user.name = name
         user.phoneno = phoneno
@@ -77,13 +77,11 @@ def register_photo(request):
         id = request.POST.get("id")
         user = Users.objects.filter(pk=id)
         prop_id = user[0].property_id
-        ### amazon
-        ### /home/ubuntu/ipCameraAdmin/app/static/images/
-        sourceurl = "/home/ubuntu/ipCameraAdmin/app/static/images/" + prop_id + "/" + user[0].name + ".jpg"
+        sourceurl = static_url + "/images/" + prop_id + "/" + user[0].name + ".jpg"
         suc, source = camera.get_source(sourceurl)
         if suc == 0:
             return HttpResponse(json.dumps({'status' : "failed"}), content_type="application/json")
-        np.savetxt("/home/ubuntu/ipCameraAdmin/app/static/images/" + prop_id + "/" + user[0].name + ".csv", source, delimiter=",")
+        np.savetxt(static_url + "/images/" + prop_id + "/" + user[0].name + ".csv", source, delimiter=",")
         Users.objects.filter(pk=id).update(registered=True)
         return HttpResponse(json.dumps({'status' : "success"}), content_type="application/json")
     except:

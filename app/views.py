@@ -106,7 +106,8 @@ def email_receiver(request):
     new_email.message_id = request.POST.get('Message-Id')
     new_email.subject = request.POST.get('Subject')
     new_email.content = request.POST.get('stripped-text')
-    new_email.serial = get_serial(re.sub(r"\s+", " ", new_email.content))
+    serial = get_serial(re.sub(r"\s+", " ", new_email.content))
+    new_email.serial = serial
     cam = Cameras.objects.filter(serial_number=serial)
     if (cam.auth_user != ''):
         new_email.notify = True

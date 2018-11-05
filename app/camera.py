@@ -15,13 +15,16 @@ import numpy as np
 from threading import Thread
 from skimage import img_as_ubyte
 
+### amazon
+### /home/ubuntu/ipCameraAdmin/app/static
+static_url = "/home/ubuntu/ipCameraAdmin/app/static"
 
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static/openface/shape_predictor_68_face_landmarks.dat
-align = openface.AlignDlib("/home/ubuntu/ipCameraAdmin/app/static/openface/shape_predictor_68_face_landmarks.dat")
+align = openface.AlignDlib(static_url + "/openface/shape_predictor_68_face_landmarks.dat")
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static/openface/nn4.small2.v1.t7
-net = openface.TorchNeuralNet("/home/ubuntu/ipCameraAdmin/app/static/openface/nn4.small2.v1.t7", 96)
+net = openface.TorchNeuralNet(static_url + "/openface/nn4.small2.v1.t7", 96)
 
 @csrf_exempt
 def create_new(request):
@@ -45,7 +48,7 @@ class VideoCamera(object):
         ### amazon
         ### /home/ubuntu/ipCameraAdmin/app/static/openface/lbpcascade_frontalface.xml
         self.vtype = vtype
-        self.face_cascade = cv2.CascadeClassifier('/home/ubuntu/ipCameraAdmin/app/static/openface/lbpcascade_frontalface.xml')
+        self.face_cascade = cv2.CascadeClassifier(static_url + '/openface/lbpcascade_frontalface.xml')
     def __del__(self):
         self.video.release()
 
@@ -253,9 +256,7 @@ def threaded_main(rtsp_url, serial):
     usrs = []
     for user in users:
         if user.registered:
-            ### amazon
-            ### /home/ubuntu/ipCameraAdmin/app/static/images/
-            sourceurl = "/home/ubuntu/ipCameraAdmin/app/static/images/" + prop_id + "/" + user.name + ".csv"
+            sourceurl = static_url + "/images/" + prop_id + "/" + user.name + ".csv"
             source = np.genfromtxt(sourceurl, delimiter=',')
             sources.append(source)
             usrs.append(user.id)
