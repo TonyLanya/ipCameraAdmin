@@ -111,7 +111,7 @@ def video_feed(request):
         vtype = request.GET.get('vtype')
         ### amazon
         ### rtsp
-        return StreamingHttpResponse(gen(VideoCamera(rtsp)),content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(VideoCamera(rtsp, vtype)),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")
 
