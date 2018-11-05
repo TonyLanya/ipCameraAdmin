@@ -66,7 +66,11 @@ def agents_html(request):
     return HttpResponse(template.render(context, request))
 
 def cameras_asJson(request):
-    object_list = Cameras.objects.all()
+    prop_id = request.GET.get("prop_id")
+    if prop_id:
+        object_list = Cameras.objects.filter(property_id=prop_id)
+    else:
+        object_list = Cameras.objects.all()
     json = serializers.serialize('json', object_list)
     return HttpResponse(json, content_type='application/json')
 
@@ -103,22 +107,36 @@ def email_receiver(request):
     new_email.subject = request.POST.get('Subject')
     new_email.content = request.POST.get('stripped-text')
     new_email.serial = get_serial(re.sub(r"\s+", " ", new_email.content))
+    cam = Cameras.objects.filter(serial_number=serial)
+    if (cam.auth_user != ''):
+        new_email.notify = True
     new_email.save()
     return HttpResponse("ok")
 
 def get_notify(request):
-    object_list = Emails.objects.filter(notify=False)
-    if (len(object_list) > 0):
-        email = object_list[0]
-        emails = Emails.objects.filter(message_id=email.message_id)
-        emails.update(notify=True)
-        serial = email.serial
-        cam = Cameras.objects.filter(serial_number=serial)
-        json = serializers.serialize('json', cam)
-        print json
-        return HttpResponse(json, content_type='application/json')
+    if request.GET.get('notify') == '0':
+        object_list = Emails.objects.filter(notify=False)
+        if (len(object_list) > 0):
+            email = object_list[0]
+            emails = Emails.objects.filter(message_id=email.message_id)
+            emails.update(notify=True)
+            serial = email.serial
+            cam = Cameras.objects.filter(serial_number=serial)
+            cam.update(auth_user = request.user.username)
+            json = serializers.serialize('json', cam)
+            return HttpResponse(json, content_type='application/json')
+        else:
+            return HttpResponse('')
     else:
-        return HttpResponse('')
+        object_list = Emails.objects.filter(notify=False)
+        if (len(object_list) > 0):
+            email = object_list[0]
+            serial = email.serial
+            cam = Cameras.objects.filter(serial_number=serial)
+            json = serializers.serialize('json', cam)
+            return HttpResponse(json, content_type='application/json')
+        else:
+            return HttpResponse('')
 
 def remove_notis(request):
     Emails.objects.filter(notify=False).update(notify=True)

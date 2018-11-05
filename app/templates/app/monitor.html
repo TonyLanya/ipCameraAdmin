@@ -11,59 +11,85 @@
 <div class="video-container" id="videoContainer">
 <!-- <video id="shaka" class="player" autoplay></video> -->
 <!-- <canvas id="ipCamera" class="canvas"></canvas> -->
-<div id="auth_res" style="    position: absolute;
-left: calc(50% - 350px);
-top: calc(50% - 395px);
-z-index: 1000;
-width: 704px;
-height: 155px;
-background-color: green;
-color: white;
-text-align: center;
-font-size: 70px;
-line-height: 155px;
-font-weight: bold;">
+<div id="auth_res" class="auth_res">
 AUTHORIZING
 </div>
 <div id="mainVideo">
     
 </div>
-<button onclick="stop_cam();" style="width: 200px;position: absolute;left: calc(50% - 100px);top: calc(50% + 240px);">
+<button onclick="stop_cam();" class="end-cam">
     End Camera
 </button>
+<div class="container-detail">
+    <div class="title detailcam">
+        DETAIL
+    </div>
+    <div class="main-detail">
+        <div class="auth-detail">
+            <!-- <div class="auth-title">
+                Authorized
+            </div> -->
+            <div class="auth-items">
+                <div class="item-title">
+                    Username :
+                </div>
+                <div class="item-content" id="item_username">
+                    XXXXXXX
+                </div>
+            </div>
+            <div class="auth-items">
+                <div class="item-title">
+                    Address :
+                </div>
+                <div class="item-content" id="item_address">
+                    XXXXXXX
+                </div>
+            </div>
+            <div class="auth-items">
+                <div class="item-title">
+                    PhoneNumber :
+                </div>
+                <div class="item-content" id="item_phoneno">
+                    XXXXXXX
+                </div>
+            </div>
+            <div class="auth-items">
+                <div class="item-title">
+                    Police Number :
+                </div>
+                <div class="item-content" id="item_policeph">
+                    XXXXXXX
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="button-success">Send Pin Code</button>
+            <button class="button-error">Turn on Siren</button>
+        </div>
+    </div>
+</div>
 </div>
 {% endblock video %}
 
 {% block content %}
 
+<div id="new_alert">
+    <div class="title">
+        New Notification
+    </div>
+    <div class="alert-vid">
+        <p>New Nofiticaion occured.</p>
+        <p>Please accept asap.</p>
+    </div>
+    <div class="actions">
+        <button id="accept_noti" class="button Accept" onclick="accept()">Accept</button>
+        <!-- <button class="button Decline">Decline</button> -->
+    </div>
+</div>
+
 <input type="hidden" id="hls" style="margin-left: 500px;" value="{{ url }}">
 <div class="right_col" role="main">
-  <div class="">
-    <div class="page-title">
-      <div class="title_left">
-        <h3>IpCamera <small>Add or Edit Cameras</small></h3>
-      </div>
-    </div>
-    <div class="clearfix"></div>
-
-    <div class="row">
-        <table cellpadding="0" cellspacing="0" border="0" id="example">
-            <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Address</th>
-                  <th>Port</th>
-                  <th>Serial_number</th>
-                  <th>Property_id</th>
-                  <th>CreateTime</th>
-                  <!-- <th>OnlineStatus</th> -->
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-  </div>
+  Waiting for alerts
 </div>
 
 {% endblock content %}
@@ -134,6 +160,7 @@ AUTHORIZING
         url = "https://" + data["fields"]["address"] + ":" + data["fields"]["port"];
         high = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
         serial = data["fields"]["serial_number"];
+        $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
         //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
         //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
         $.ajax({
@@ -147,7 +174,6 @@ AUTHORIZING
             },
             dataType: 'json',
             success: function (data) {
-                $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
                 flag_auth = 1;
                 authorize();
             }
@@ -171,6 +197,15 @@ AUTHORIZING
                 }
                 if (data["status"] == "AUTHORIZED") {
                     flag_auth = 0;
+                    $("#auth_res").addClass("auth_suc");
+                    $("#item_username").text(data["name"]);
+                    $("#item_phoneno").text(data["phoneno"]);
+                    $("#item_address").text(data["address"]);
+                    $("#item_policeph").text(data["policeph"]);
+                } else if (data["status"] == "REGISTER FIRST") {
+                    flag_auth = 0;
+                } else if (data["status"] == "NOT AUTHORIZED") {
+                    $("#auth_res").addClass("auth_fail");
                 }
                 console.log(data);
             },
@@ -189,7 +224,9 @@ AUTHORIZING
         $.ajax({
             type: 'GET',
             url: "get-notify",
-            data: $(this).serialize(),
+            data: {
+                "notify" : view_status
+            },
             dataType: 'json',
             success: function (data) {
                 // $("#noti-counts").text(data.length);
@@ -206,6 +243,7 @@ AUTHORIZING
                     url = "https://" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"];
                     high = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
                     serial = data[0]["fields"]["serial_number"];
+                    $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
                     //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
                     //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
                     $.ajax({
@@ -219,7 +257,6 @@ AUTHORIZING
                         },
                         dataType: 'json',
                         success: function (data) {
-                            $("#mainVideo").html("<img src=\"/video_feed?streamUrl=" + rtsp + "\" class=\"main-video\">");
                             view_status = 1;
                             flag_auth = 1;
                             authorize();
@@ -227,6 +264,7 @@ AUTHORIZING
                     });
                     $("#videoContainer").show();
                 } else {
+                    $("#new_alert").show();
                     console.log("new noti received");
                 }
             },
@@ -237,5 +275,9 @@ AUTHORIZING
         });
     }
     setTimeout(doAjax, interval);
+
+    function accept() {
+        stop_cam();
+    }
   </script>
 {% endblock javascripts %}

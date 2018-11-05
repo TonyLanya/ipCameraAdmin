@@ -13,21 +13,21 @@ class Cameras(models.Model):
     port = models.CharField(max_length=5)
     login = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
-    video_stream = models.CharField(max_length=50, null=True)
-    data_stream = models.CharField(max_length=50, null=True)
     serial_number = models.CharField(max_length=50)
-    property_id = models.IntegerField(null=True)
+    property_id = models.CharField(max_length=100, null=True)
     online_status = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
     auth_state = models.CharField(max_length=50, default="AUTHORIZING")
+    auth_res = models.CharField(max_length=50, null=True)
+    auth_user = models.CharField(max_length=50, null=True)
 
     def publish(self):
         self.published_date = timezone.now()
         self.save()
 
     def __str__(self):
-        return self.title
+        return self.name
 
 class Emails(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular email')
@@ -42,6 +42,8 @@ class Users(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular user')
     name = models.CharField(max_length=100)
     phoneno = models.CharField(max_length=50)
+    property_id = models.CharField(max_length=100, null=True)
+    registered = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
 
 class Properties(models.Model):
@@ -52,10 +54,13 @@ class Properties(models.Model):
     zipcode = models.IntegerField(null=True)
     country = models.CharField(max_length=250)
     phoneno = models.CharField(max_length=50)
+    police = models.CharField(max_length=50, null=True)
     created_at = models.DateTimeField(default=timezone.now)
 
 class Agents(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this particular agent')
+    email = models.CharField(max_length=50, null=True)
+    username = models.CharField(max_length=50, null=True)
     address = models.CharField(max_length=250)
     city = models.CharField(max_length=250)
     state = models.CharField(max_length=250)
