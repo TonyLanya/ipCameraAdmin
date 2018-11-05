@@ -44,8 +44,8 @@ class VideoCamera(object):
         self.video_status = 1
         ### amazon
         ### /home/ubuntu/ipCameraAdmin/app/static/openface/lbpcascade_frontalface.xml
-        self.vtype = vtype'/home/ubuntu/ipCameraAdmin/app/static/openface/lbpcascade_frontalface.xml'
-        self.face_cascade = cv2.CascadeClassifier()
+        self.vtype = vtype
+        self.face_cascade = cv2.CascadeClassifier('/home/ubuntu/ipCameraAdmin/app/static/openface/lbpcascade_frontalface.xml')
     def __del__(self):
         self.video.release()
 
