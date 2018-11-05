@@ -18,10 +18,10 @@ from skimage import img_as_ubyte
 
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static/openface/shape_predictor_68_face_landmarks.dat
-align = openface.AlignDlib("/home/out/development/gentelella/app/static/openface/shape_predictor_68_face_landmarks.dat")
+align = openface.AlignDlib("/home/ubuntu/ipCameraAdmin/app/static/openface/shape_predictor_68_face_landmarks.dat")
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static/openface/nn4.small2.v1.t7
-net = openface.TorchNeuralNet("/home/out/development/gentelella/app/static/openface/nn4.small2.v1.t7", 96)
+net = openface.TorchNeuralNet("/home/ubuntu/ipCameraAdmin/app/static/openface/nn4.small2.v1.t7", 96)
 
 @csrf_exempt
 def create_new(request):
@@ -42,8 +42,10 @@ class VideoCamera(object):
     def __init__(self, rtsp_url, vtype):
         self.video = cv2.VideoCapture(rtsp_url)
         self.video_status = 1
-        self.vtype = vtype
-        self.face_cascade = cv2.CascadeClassifier('/home/out/development/gentelella/app/static/openface/lbpcascade_frontalface.xml')
+        ### amazon
+        ### /home/ubuntu/ipCameraAdmin/app/static/openface/lbpcascade_frontalface.xml
+        self.vtype = vtype'/home/ubuntu/ipCameraAdmin/app/static/openface/lbpcascade_frontalface.xml'
+        self.face_cascade = cv2.CascadeClassifier()
     def __del__(self):
         self.video.release()
 
@@ -106,7 +108,7 @@ def video_feed(request):
         vtype = request.GET.get('vtype')
         ### amazon
         ### rtsp
-        return StreamingHttpResponse(gen(VideoCamera("rtsp://admin:patrol88@166.241.170.18:1111/cam/playback?channel=1&starttime=2018_11_01_02_40_00&endtime=2018_11_01_02_41_59")),content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(VideoCamera(rtsp)),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")
 
@@ -167,7 +169,7 @@ def threaded_authorize(rtsp_url, serial, sources, users):
         return 1
     ### amazon
     ### video = cv2.VideoCapture(rtsp_url)
-    video = cv2.VideoCapture("/home/out/development/gentelella/app/static/images/test.MP4")
+    video = cv2.VideoCapture(rtsp_url)
     success, realImg = video.read()
     target = getRep(align, net, realImg, 96)
     if isinstance(target, str):
@@ -251,7 +253,9 @@ def threaded_main(rtsp_url, serial):
     usrs = []
     for user in users:
         if user.registered:
-            sourceurl = "/home/out/development/gentelella/app/static/images/" + prop_id + "/" + user.name + ".csv"
+            ### amazon
+            ### /home/ubuntu/ipCameraAdmin/app/static/images/
+            sourceurl = "/home/ubuntu/ipCameraAdmin/app/static/images/" + prop_id + "/" + user.name + ".csv"
             source = np.genfromtxt(sourceurl, delimiter=',')
             sources.append(source)
             usrs.append(user.id)
