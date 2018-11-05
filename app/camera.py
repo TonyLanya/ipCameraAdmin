@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.template import loader
-from django.http import HttpResponse,StreamingHttpResponse
+from django.http import HttpResponse,StreamingHttpResponse, HttpResponseServerError
 from django.core import serializers
 from .models import Cameras, Emails, Users, Properties
 from django.views.decorators.csrf import csrf_exempt
