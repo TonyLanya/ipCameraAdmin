@@ -17,7 +17,7 @@ from skimage import img_as_ubyte
 
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static
-static_url = "/home/ubuntu/ipCameraAdmin/app/static"
+static_url = "/root/ipCameraAdmin/app/static"
 
 ### amazon
 ### /home/ubuntu/ipCameraAdmin/app/static/openface/shape_predictor_68_face_landmarks.dat
@@ -70,7 +70,7 @@ class VideoCamera(object):
         (x, y, w, h) = faces[0]
 
         # return only the face part of the image
-        return 1, img[y:y + w, x:x + h], faces[0]
+        return len(faces), img[y:y + w, x:x + h], faces[0]
 
     def draw_rectangle(self, img, rect):
         (x, y, w, h) = rect
@@ -87,7 +87,11 @@ class VideoCamera(object):
             self.video_status = 0
             return None
         flag, face, rect = self.detect_face(image)
-        if flag:
+        if flag > 0:
+            print "$$$$$$$$"
+            print flag
+            print "DETECTED"
+            print "$$$$$$$$"
             self.draw_rectangle(image, rect)
         ret,jpeg = cv2.imencode('.jpg',image)
         return jpeg.tobytes()
@@ -100,7 +104,7 @@ def gen(camera):
         if frame != None:
             yield(b'--frame\r\n'
             b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-            time.sleep(5)
+            #time.sleep(5)
 
 @gzip.gzip_page
 @csrf_exempt

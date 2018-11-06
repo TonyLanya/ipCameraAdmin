@@ -7,7 +7,9 @@ import camera
 import numpy as np
 import os
 
-static_url = "/home/out/development/gentelella/app/static"
+### amazon
+### /root/ipCameraAdmin/app/static
+static_url = "/root/ipCameraAdmin/app/static"
 
 @csrf_exempt
 def create_new(request):
