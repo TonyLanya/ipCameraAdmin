@@ -37,6 +37,12 @@
               </div>
               <div class="modal-body">
                 <div class="form-group row">
+                    <label for="createUsername" class="col-sm-3 text-right control-label col-form-label">Username : </label>
+                    <div class="col-sm-9">
+                        <input id="createUsername" type="text" class="form-control" placeholder="Username">
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label for="editAddress" class="col-sm-3 text-right control-label col-form-label">Address : </label>
                     <div class="col-sm-9">
                         <input id="createAddress" type="text" class="form-control" placeholder="Adress">
@@ -87,6 +93,7 @@
         <table cellpadding="0" cellspacing="0" border="0" id="example">
             <thead>
                 <tr>
+                    <th>username</th>
                     <th>address</th>
                     <th>city</th>
                     <th>state</th>
@@ -120,6 +127,7 @@
             },
 
             "columns": [
+                    { "data" : "fields.username"},
                     { "data" : "fields.address" },
                     { "data" : "fields.city" },
                     { "data" : "fields.state" },
@@ -135,6 +143,7 @@
       alert('you clicked on ' + data["fields"]['serial_number'] + '\'s row');
     });
     function onCreate() {
+        preUsername = $("#createUsername").val();
         preAddress = $("#createAddress").val();
         preCity = $("#createCity").val();
         preState = $("#createState").val();
@@ -151,6 +160,7 @@
             type: 'POST',
             /* send the csrf-token and the input to the controller */
             data: {
+                username: preUsername,
                 address: preAddress,
                 city: preCity,
                 state: preState,
