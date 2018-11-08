@@ -6,6 +6,7 @@ import json
 @csrf_exempt
 def create_new(request):
     new_agent = Agents()
+    new_agent.username = request.POST.get('username')
     new_agent.address = request.POST.get('address')
     new_agent.city = request.POST.get('city')
     new_agent.state = request.POST.get('state')
