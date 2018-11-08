@@ -317,6 +317,13 @@ def get_camera(request):
     return HttpResponse(json, content_type='application/json')
 
 @csrf_exempt
+def reset_cam(request):
+    id = request.POST.get("id")
+    cam = Cameras.objects.filter(pk=id)
+    cam.update(auth_user=None)
+    return HttpResponse(json.dumps({'status' : "success"}), content_type="application/json")
+
+@csrf_exempt
 def get_cam(request):
     # try:
     id = request.POST.get("id")

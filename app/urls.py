@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^camera/get-cam', camera.get_cam),
     url(r'^camera/update', camera.update_cam),
     url(r'^camera/view-cam', camera.view_cam),
+    rul(r'^camera/reset-camera', camera.reset_cam),
 
     url(r'^property/create-new', properties.create_new),
     url(r'^property/get-property', properties.get_property),
