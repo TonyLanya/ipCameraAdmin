@@ -161,6 +161,7 @@
                   <th>Port</th>
                   <th>Serial_number</th>
                   <th>Property_id</th>
+                  <th>Status</th>
                   <th>CreateTime</th>
                   <th>Action</th>
                   <!-- <th>OnlineStatus</th> -->
@@ -299,7 +300,7 @@
 
     $(document).ready(function() {
         prop_id = getUrlParameter("prop_id");
-        $('#example').dataTable( {
+        var table = $('#example').DataTable( {
             "processing": true,
             "ajax": {
                 "processing": true,
@@ -316,10 +317,18 @@
                     { "data" : "fields.port" },
                     { "data" : "fields.serial_number" },
                     { "data" : "fields.property_id" },
+                    { mRender: function (data, type, row) {
+                        if (row["fields"]["online_status"] == true) {
+                            return '<p class="pReg">ONLINE<p>';
+                        } else {
+                            return '<p class="nReg">OFFLINE<p>';
+                        }
+                    }},
                     { "data" : "fields.created_at" },
                     { mRender: function (data, type, row) {
                         return '<button onclick="edit(\'' + row["pk"] +'\')" data-toggle="modal" data-target="#editCamera">Edit</button>' + '<button onclick="view(\'' + row["pk"] +'\')">View</button>' + '<button onclick="remove(\'' + row["fields"]["serial_number"] +'\')">Remove</button>' + '<button onclick="reset(\'' + row["pk"] +'\')">Reset</button>';
                     }}
+<<<<<<< HEAD
                     // { mRender: function (data, type, row) {
                     //     return '<a class="btn btn-outline-info " onclick="onEdit(\''+ row["serial_number"] +'\')" data-toggle="modal" data-target="#editCamera"><i class="fas fa-edit "></i></a><a class="btn btn-outline-danger" onclick="onDelete(\''+ row["serial_number"] +'\')"><i class="fas fa-trash-alt "></i></a>';
                     // }}
@@ -330,8 +339,15 @@
                     //         return 'ONLINE';
                     //     }
                     // }}
+=======
+>>>>>>> develop
                 ]
         } );
+        setInterval(function() {
+            //$('#example').DataTable().destroy();
+            //fetch_data();
+            table.ajax.reload(null, false);
+        }, 2000);
     } );
 
     function remove(serial) {

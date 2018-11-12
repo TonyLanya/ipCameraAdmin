@@ -73,11 +73,18 @@ def alerts_html(request):
     return HttpResponse(template.render(context, request))
 
 def cameras_asJson(request):
-    prop_id = request.GET.get("prop_id")
-    if prop_id:
-        object_list = Cameras.objects.filter(property_id=prop_id)
-    else:
-        object_list = Cameras.objects.all()
+    object_list = Cameras.objects.all()
+    for item in object_list:
+        if item.online_status == False:
+            continue
+        last_con = item.lastConnection
+        now = timezone.now()
+        delta = now - last_con
+        print(delta)
+        print(delta.total_seconds())
+        if delta.total_seconds() > 1860:
+            item.online_status = False
+            item.save()
     json = serializers.serialize('json', object_list)
     return HttpResponse(json, content_type='application/json')
 
@@ -104,6 +111,7 @@ def agents_asJson(request):
         if delta.total_seconds() > 3:
             item.status = "offline"
             item.save()
+    object_list = Agents.objects.all()
     json = serializers.serialize('json', object_list)
     return HttpResponse(json, content_type='application/json')
 
@@ -117,24 +125,31 @@ def get_serial(text):
     
 @csrf_exempt
 def email_receiver(request):
-    form = EmailForm(request.POST)
-    print(request.POST)
-    print(request.POST.get('stripped-text'))
-    new_email = Emails()
-    new_email.message_id = request.POST.get('Message-Id')
-    new_email.subject = request.POST.get('Subject')
-    new_email.content = request.POST.get('stripped-text')
-    serial = get_serial(re.sub(r"\s+", " ", new_email.content))
-    new_email.serial = serial
-    cam = Cameras.objects.filter(serial_number=serial)
-    if (cam[0].auth_user != None):
-        new_email.notify = True
-    new_email.save()
-    return HttpResponse("ok")
+    if request.POST.get('subject') == "Health_Test":
+        serial = get_serial(re.sub(r"\s+", " ", request.POST.get('stripped-text')))
+        cam = Cameras.objects.get(serial_number=serial)
+        cam.online_status = True
+        cam.lastConnection = timezone.now()
+        cam.save()
+        return HttpResponse('')
+    else:
+        #form = EmailForm(request.POST)
+        print(request.POST)
+        print(request.POST.get('stripped-text'))
+        new_email = Emails()
+        new_email.message_id = request.POST.get('Message-Id')
+        new_email.subject = request.POST.get('Subject')
+        new_email.content = request.POST.get('stripped-text')
+        serial = get_serial(re.sub(r"\s+", " ", new_email.content))
+        new_email.serial = serial
+        cam = Cameras.objects.filter(serial_number=serial)
+        if (cam[0].auth_user != None):
+            new_email.notify = True
+        new_email.save()
+        return HttpResponse("ok")
 
 def get_notify(request):
     alert = request.GET.get('alert')
-    print(type(alert))
     if alert == "1":
         agent = Agents.objects.get(username = request.user.username)
         if agent.status != "offline":
