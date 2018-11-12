@@ -15,6 +15,8 @@
 AUTHORIZING
 </div>
 <div id="mainVideo">
+
+<div id="sound"></div>
     
 </div>
 <button onclick="stop_cam();" class="end-cam">
@@ -99,6 +101,11 @@ AUTHORIZING
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/2.4.1/shaka-player.compiled.js"></script>
   <script src="http://benalman.com/code/projects/jquery-throttle-debounce/jquery.ba-throttle-debounce.js"></script>
   <script type="text/javascript" language="javascript" class="init">
+    function playSound() {
+        filename = '/static/vendors/notifi/noti';
+        var mp3Source = '<source src="' + filename + '.mp3" type="audio/mpeg">';
+        document.getElementById("sound").innerHTML='<audio autoplay="autoplay">' + mp3Source + '</audio>';
+    }
     $(document).ready(function() {
     });
 
@@ -230,8 +237,8 @@ AUTHORIZING
                 if (view_status == 0) {
                     rtsp = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=1";
                     url = "https://" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"];
-                    high = "rtsp://" + data[0]["fields"]["login"] + ":" + data[0]["fields"]["password"] + "@" + data[0]["fields"]["address"] + ":" + data[0]["fields"]["port"] + "/cam/realmonitor?channel=1&subtype=2";
-                    serial = data[0]["fields"]["serial_number"];
+                    high = "rtsp://" + data[0]["fields"]["login"] + ":"
+                    playSound();
                     $("#mainVideo").html("<img src=\"/video_feed?serial=" + serial +"&streamUrl=" + rtsp + "\" class=\"main-video\">");
                     //rtsp = "rtsp://" + data["fields"]["login"] + ":" + data["fields"]["password"] + "@" + data["fields"]["address"] + ":" + data["fields"]["port"] + "/cam/playback?channel=1&starttime=2018_09_15_12_37_05&endtime=2018_09_15_18_34_14";
                     //rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
@@ -254,6 +261,7 @@ AUTHORIZING
                     $("#videoContainer").show();
                 } else {
                     $("#new_alert").show();
+                    playSound();
                     console.log("new noti received");
                 }
             },

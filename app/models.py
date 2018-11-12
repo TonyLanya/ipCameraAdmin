@@ -21,6 +21,7 @@ class Cameras(models.Model):
     auth_state = models.CharField(max_length=50, default="AUTHORIZING")
     auth_res = models.CharField(max_length=50, null=True)
     auth_user = models.CharField(max_length=50, null=True)
+    lastConnection = models.DateTimeField(default=timezone.now)
 
     def publish(self):
         self.published_date = timezone.now()
