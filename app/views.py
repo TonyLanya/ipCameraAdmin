@@ -80,8 +80,6 @@ def cameras_asJson(request):
         last_con = item.lastConnection
         now = timezone.now()
         delta = now - last_con
-        print(delta)
-        print(delta.total_seconds())
         if delta.total_seconds() > 1860:
             item.online_status = False
             item.save()
@@ -106,8 +104,6 @@ def agents_asJson(request):
         last_con = item.lastConnection
         now = timezone.now()
         delta = now - last_con
-        print(delta)
-        print(delta.total_seconds())
         if delta.total_seconds() > 3:
             item.status = "offline"
             item.save()

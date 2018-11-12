@@ -57,11 +57,11 @@ def update_user(request):
         phoneno = request.POST.get("phoneno")
         propid = request.POST.get("propid")
         user = Users.objects.get(pk=id)
-        if user.registered == 1:
-            if (user.name != name) or (user.property_id != propid) :
-                old_path = static_url + "/images/" + user.property_id + "/" + user.name + ".csv"
-                new_path = static_url + "/images/" + propid + "/" + name + ".csv"
-                os.rename(old_path, new_path)
+        # if user.registered == 1:
+        #     if (user.name != name) or (user.property_id != propid) :
+        #         old_path = static_url + "/images/" + user.property_id + "/" + user.name + ".csv"
+        #         new_path = static_url + "/images/" + propid + "/" + name + ".csv"
+        #         os.rename(old_path, new_path)
         user.name = name
         user.phoneno = phoneno
         user.property_id = propid
