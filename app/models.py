@@ -68,4 +68,6 @@ class Agents(models.Model):
     zipcode = models.IntegerField(null=True)
     country = models.CharField(max_length=250)
     phoneno = models.CharField(max_length=50)
+    lastConnection = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=20, default="offline")
     created_at = models.DateTimeField(default=timezone.now)

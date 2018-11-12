@@ -6,6 +6,7 @@ from .models import Cameras, Emails, Users, Properties, Agents
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import re
+from django.utils import timezone
 
 from app.forms import EmailForm
 
@@ -92,6 +93,17 @@ def properties_asJson(request):
 
 def agents_asJson(request):
     object_list = Agents.objects.all()
+    for item in object_list:
+        if item.status == "offline":
+            continue
+        last_con = item.lastConnection
+        now = timezone.now()
+        delta = now - last_con
+        print(delta)
+        print(delta.total_seconds())
+        if delta.total_seconds() > 3:
+            item.status = "offline"
+            item.save()
     json = serializers.serialize('json', object_list)
     return HttpResponse(json, content_type='application/json')
 
@@ -121,6 +133,19 @@ def email_receiver(request):
     return HttpResponse("ok")
 
 def get_notify(request):
+    alert = request.GET.get('alert')
+    print(type(alert))
+    if alert == "1":
+        agent = Agents.objects.get(username = request.user.username)
+        if agent.status != "offline":
+            agent.status = "offline"
+            agent.save()
+    else :
+        agent = Agents.objects.get(username = request.user.username)
+        agent.lastConnection = timezone.now()
+        if agent.status != "online":
+            agent.status = "online"
+        agent.save()
     if request.GET.get('notify') == '0':
         object_list = Emails.objects.filter(notify=False)
         if (len(object_list) > 0):
