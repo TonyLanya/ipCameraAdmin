@@ -328,19 +328,6 @@
                     { mRender: function (data, type, row) {
                         return '<button onclick="edit(\'' + row["pk"] +'\')" data-toggle="modal" data-target="#editCamera">Edit</button>' + '<button onclick="view(\'' + row["pk"] +'\')">View</button>' + '<button onclick="remove(\'' + row["fields"]["serial_number"] +'\')">Remove</button>' + '<button onclick="reset(\'' + row["pk"] +'\')">Reset</button>';
                     }}
-<<<<<<< HEAD
-                    // { mRender: function (data, type, row) {
-                    //     return '<a class="btn btn-outline-info " onclick="onEdit(\''+ row["serial_number"] +'\')" data-toggle="modal" data-target="#editCamera"><i class="fas fa-edit "></i></a><a class="btn btn-outline-danger" onclick="onDelete(\''+ row["serial_number"] +'\')"><i class="fas fa-trash-alt "></i></a>';
-                    // }}
-                    // { mRender: function (data, type, row) {
-                    //     if (row["online_status"] == false) {
-                    //         return 'OFFLINE';
-                    //     } else {
-                    //         return 'ONLINE';
-                    //     }
-                    // }}
-=======
->>>>>>> develop
                 ]
         } );
         setInterval(function() {
