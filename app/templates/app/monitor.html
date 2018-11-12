@@ -97,11 +97,14 @@ AUTHORIZING
 {% block javascripts %}
   {{ block.super }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/2.4.1/shaka-player.compiled.js"></script>
+  <script src="http://benalman.com/code/projects/jquery-throttle-debounce/jquery.ba-throttle-debounce.js"></script>
   <script type="text/javascript" language="javascript" class="init">
     $(document).ready(function() {
     });
 
     var serial;
+
+    var alert = 0;
 
     function stop_cam() {
         $.ajax({
@@ -128,31 +131,16 @@ AUTHORIZING
       setTimeout(draw,20,v,c,w,h);
     }
 
+    //300000
+    $(document).mousemove($.debounce(300000, false, function(e){
+        console.log("stop move");
+        alert = 1;
+        swal({ title:"Warning!", text: "Are you here?", type: "warning" }, function() {
+            console.log("ok");
+            alert = 0;
+        });
+    }));
     $(document).ready(function() {
-        $('#example').dataTable( {
-            "processing": true,
-            "ajax": {
-                "processing": true,
-                "url": "{% url 'my_ajax_url' %}",
-                "dataSrc": ""
-            },
-
-            "columns": [
-                    { "data" : "fields.name" },
-                    { "data" : "fields.address" },
-                    { "data" : "fields.port" },
-                    { "data" : "fields.serial_number" },
-                    { "data" : "fields.property_id" },
-                    { "data" : "fields.created_at" },
-                    // { mRender: function (data, type, row) {
-                    //     if (row["online_status"] == false) {
-                    //         return 'OFFLINE';
-                    //     } else {
-                    //         return 'ONLINE';
-                    //     }
-                    // }}
-                ]
-        } );
     } );
     $('#example tbody').on('click', 'tr', function() {
         var data = $("#example").DataTable().row(this).data();
@@ -225,7 +213,8 @@ AUTHORIZING
             type: 'GET',
             url: "get-notify",
             data: {
-                "notify" : view_status
+                "notify" : view_status,
+                "alert" : alert
             },
             dataType: 'json',
             success: function (data) {

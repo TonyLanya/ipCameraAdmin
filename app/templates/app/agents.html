@@ -100,6 +100,8 @@
                     <th>zipcode</th>
                     <th>country</th>
                     <th>phoneno</th>
+                    <th>status</th>
+                    <th>LastConnection</th>
                     <th>created_at</th>
                 </tr>
             </thead>
@@ -118,7 +120,9 @@
   <script type="text/javascript" language="javascript" class="init">
 
     $(document).ready(function() {
-        $('#example').dataTable( {
+        var table = $('#example').DataTable( {
+            "sDom": 'prtp',
+            "serverSide": true,
             "processing": true,
             "ajax": {
                 "processing": true,
@@ -134,13 +138,27 @@
                     { "data" : "fields.zipcode" },
                     { "data" : "fields.country" },
                     { "data" : "fields.phoneno" },
+                    { mRender: function (data, type, row) {
+                        console.log(row);
+                        if (row["fields"]["status"] == "online") {
+                            return '<p class="pReg">ONLINE<p>';
+                        } else {
+                            return '<p class="nReg">OFFLINE<p>';
+                        }
+                    }},
+                    { "data" : "fields.lastConnection" },
                     { "data" : "fields.created_at" },
                 ]
         } );
+        setInterval(function() {
+            //$('#example').DataTable().destroy();
+            //fetch_data();
+            table.ajax.reload(null, false);
+        }, 2000);
     } );
     $('#example tbody').on('click', 'tr', function() {
       var data = $("#example").DataTable().row(this).data();
-      alert('you clicked on ' + data["fields"]['serial_number'] + '\'s row');
+      //alert('you clicked on ' + data["fields"]['serial_number'] + '\'s row');
     });
     function onCreate() {
         preUsername = $("#createUsername").val();
